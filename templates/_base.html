@@ -10,7 +10,9 @@
     <header class="header">
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col text-center py-3">
-                <img src="{{ url_for("static", filename="img/syntec.png") }}" height="100">
+                <a href="{{ url_for(".about") }}">
+                    <img src="{{ url_for("static", filename="img/syntec.png") }}" height="100" alt="Syntec Numérique">
+                </a>
             </div>
         </div>
         <div class="row">
@@ -81,7 +83,7 @@
             <div class="col text-center text-white bg-info py-2">
                 Propulsé par
                 <a href="https://motherbase.ai" target="_blank" class="">
-                    <img src="{{ url_for("static", filename="img/motherbase.svg") }}" width="150">
+                    <img src="{{ url_for("static", filename="img/motherbase.svg") }}" width="150" alt="Motherbase">
                 </a>
             </div>
         </div>
