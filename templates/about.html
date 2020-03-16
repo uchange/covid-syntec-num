@@ -1,39 +1,51 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <div class="section jumbotron text-justify">
-        <p>
-            Ce site présente des acteurs du numérique présents sur le territoire français qui apportent des solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19.
-        </p>
-        <p>
-            Les solutions sont réparties en trois catégories :
-        </p>
-        <ul>
-            <li>
-                Des solutions <a href="{{ url_for(".famille") }}">pour le grand public et les familles</a>,
-                pour mieux gérer le quotidien.
-            </li>
-            <li>
-                Des solutions <a href="{{ url_for(".travail") }}">pour les entreprises et les salariés</a>,
-                pour mieux s’adapter à un contexte professionnel de crise.
-            </li>
-            <li>
-                Des solutions <a href="{{ url_for(".sante") }}">médicales à destination des malades</a>,
-                ou de ceux qui craignent de l’être.
-            </li>
-            <li>
-                Et des solutions à destination <a href="{{ url_for(".sante") }}">des professionnels de santé</a>.
-            </li>
-        </ul>
-        <p>
-            Ce site est édité par le <a href="https://syntec-numerique.fr/" target="_blank">Syntec Numérique</a>.
-            Il s’appuie sur le sourcing (identification) automatique de solution
-            <a href="https://motherbase.ai/" target="_blank">Motherbase.ai</a>.
-        </p>
-        <p>
-            Si vous souhaitez proposer votre solution, rien de plus simple, il vous suffit d’envoyer un tweet à
-            <a href="https://twitter.com/covidsyntecnum" target="_blank">@CovidSyntecNum</a>
-            décrivant votre offre depuis le compte de votre entreprise.
-        </p>
+    <div class="section jumbotron row">
+        <div class="col-lg-auto text-center">
+            <img class="img-fluid mb-3"
+                 src="{{ url_for("static", filename="img/coeur.png") }}"
+                 style="max-height: 300px">
+        </div>
+        <div class="col-lg text-justify">
+            <p>
+                Ce site présente des acteurs du numérique présents sur le territoire français qui apportent des
+                solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19.
+            </p>
+            <p>
+                Les solutions sont réparties en trois catégories :
+            </p>
+            <ul>
+                <li>
+                    Des solutions <a href="{{ url_for(".famille") }}">pour le grand public et les familles</a>,
+                    pour mieux gérer le quotidien.
+                </li>
+                <li>
+                    Des solutions <a href="{{ url_for(".travail") }}">pour les entreprises et les salariés</a>,
+                    pour mieux s’adapter à un contexte professionnel de crise.
+                </li>
+                <li>
+                    Des solutions <a href="{{ url_for(".sante") }}">médicales à destination des malades</a>,
+                    ou de ceux qui craignent de l’être.
+                </li>
+                <li>
+                    Et des solutions à destination <a href="{{ url_for(".sante") }}">des professionnels de santé</a>.
+                </li>
+            </ul>
+            <p>
+                Ce site est édité par <a href="https://syntec-numerique.fr/" target="_blank">Syntec Numérique</a>.
+                Il s’appuie sur le sourcing (identification) automatique de solution
+                <a href="https://motherbase.ai/" target="_blank">Motherbase.ai</a>.
+            </p>
+            <p>
+                Si vous souhaitez proposer votre solution, rien de plus simple, il vous suffit d’envoyer un tweet à
+                <a href="https://twitter.com/covidsyntecnum" target="_blank">@CovidSyntecNum</a>
+                décrivant votre offre depuis le compte de votre entreprise.
+            </p>
+            <p class="small">
+                Ce site référence automatiquement les acteurs porteurs de solutions, qu'ils soient ou non membres
+                de Syntec Numérique.
+            </p>
+        </div>
     </div>
 {% endblock %}
