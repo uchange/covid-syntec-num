@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Covid-19 Syntec Numérique</title>
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/bootstrap.min.css") }}">
+</head>
+<body class="d-flex flex-column h-100">
+    <header class="header">
+        <div class="row flex-nowrap justify-content-between align-items-center">
+            <div class="col text-center py-3">
+                <img src="{{ url_for("static", filename="img/syntec.png") }}" height="100">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center text-white bg-info py-3">
+                <div class="">
+                    Les solutions numériques au service de la crise Covid-19
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-md navbar-light bg-light">
+            <button class="navbar-toggler collapsed" type="button"
+                    data-toggle="collapse" data-target="#navbar"
+                    aria-controls="navbar" aria-expanded="false" aria-label="">
+                <span class="navbar-toggler-icon"></span>
+                <span>Menu</span>
+            </button>
+            <a class="navbar-brand d-block d-sm-none font-weight-bold">
+                {% if page == 'about' %}
+                    <span>À propos</span>
+                {% elif page == 'famille' %}
+                    <span>Solutions familles</span>
+                {% elif page == 'travail' %}
+                    <span>Solutions travail</span>
+                {% elif page == 'sante' %}
+                    <span>Solutions patients</span>
+                {% elif page == 'sante-pro' %}
+                    <span>Professionnels de santé</span>
+                {% endif %}
+            </a>
+            <div class="navbar-collapse collapse text-center font-weight-bold" id="navbar">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item{% if page == 'about' %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.about') }}">
+                            À propos
+                        </a>
+                    </li>
+                    <li class="nav-item{% if page == 'famille' %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.famille') }}">
+                            Solutions Famille
+                        </a>
+                    </li>
+                    <li class="nav-item{% if page == 'travail' %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.travail') }}">
+                            Solutions Travail
+                        </a>
+                    </li>
+                    <li class="nav-item{% if page == 'sante' %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.sante') }}">
+                            Solutions Patients
+                        </a>
+                    </li>
+                    <li class="nav-item{% if page == 'sante-pro' %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.sante_pro') }}">
+                            Professionnels de santé
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main class="flex-shrink-0 p-3" role="main">
+        {% block content %}
+
+        {% endblock %}
+    </main>
+    <footer class="footer mt-auto">
+        <div class="row">
+            <div class="col text-center text-white bg-info py-2">
+                Propulsé par
+                <a href="https://motherbase.ai" target="_blank" class="">
+                    <img src="{{ url_for("static", filename="img/motherbase.svg") }}" width="150">
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for("static", filename="js/jquery.slim.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/popper.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/fontawesome.min.js") }}"></script>
+</body>
