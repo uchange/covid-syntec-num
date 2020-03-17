@@ -18,7 +18,7 @@ WS_FAMILLE, WS_TRAVAIL, WS_SANTE, WS_SANTE_PRO = (
 config = {
     'CACHE_TYPE': os.environ.get('CACHE_TYPE', 'filesystem'),
     'CACHE_DIR': os.environ.get('CACHE_DIR', './cache/'),
-    'CACHE_DEFAULT_TIMEOUT': int(os.environ.get('CACHE_TIMEOUT', 300)),
+    'CACHE_DEFAULT_TIMEOUT': int(os.environ.get('CACHE_TIMEOUT', 900)),
 }
 app = application = Flask(__name__)
 app.config.from_mapping(config)
@@ -46,9 +46,9 @@ def get_startups(workspace, category=None):
                 all=1,
                 links__workspace_id=workspace,
                 **(dict(links__extra_data__category=category) if category else {})
-            )).json()
+            ))
             startups = {}
-            for result in results:
+            for result in results.json():
                 startups[result['id']] = result
                 if not result['logo']:
                     continue
@@ -68,8 +68,8 @@ def get_startups(workspace, category=None):
                     all=1,
                     startup__links__workspace_id=workspace,
                     **(dict(startup__links__extra_data__category=category) if category else {})
-                )).json()
-                for result in results:
+                ))
+                for result in results.json():
                     startup = startups[result['startup_id']]
                     element = startup.setdefault(type, [])
                     element.append(result)
@@ -85,8 +85,8 @@ def get_startups(workspace, category=None):
                 all=1,
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
-            )).json()
-            for result in results:
+            ))
+            for result in results.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('linkedin', [])
                 element.append(result)
@@ -103,8 +103,8 @@ def get_startups(workspace, category=None):
                 all=1,
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
-            )).json()
-            for result in results:
+            ))
+            for result in results.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('twitter', [])
                 element.append(result)
@@ -112,7 +112,7 @@ def get_startups(workspace, category=None):
             return startups.values()
     except:  # noqa
         traceback.print_exc()
-    return []
+    return None
 
 
 def get_categories(workspace):

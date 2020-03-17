@@ -1,72 +1,98 @@
 {% extends '_base.html' %}
 
 {% block content %}
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-    {% for startup in startups %}
-        <div class="col mb-4">
-            <div id="startup-{{ startup.id }}" class="card border-warning rounded h-100">
-                <div class="text-center pt-2">
-                    <img src="{{ startup.logo }}" height="100">
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title text-center text-danger font-weight-bold">
-                        {{ startup.name }}
-                    </h5>
-                    <p class="card-text text-muted text-justify">
-                        <small>{{ startup.value_proposition_fr|truncate }}</small>
-                    </p>
-                    <div class="text-center">
-                        <a class="text-danger" href="{{ startup.website_url }}">
-                            {{ startup.website_url }}
-                        </a>
-                    </div>
-                    <div class="text-center pt-2">
-                        {% for linkedin in startup.linkedin %}
-                            <a class="card-link" href="{{ linkedin.url }}" target="_blank">
-                                <i class="fab fa-lg fa-linkedin"></i>
-                            </a>
-                        {% endfor %}
-                        {% for twitter in startup.twitter %}
-                            <a class="card-link" href="https://twitter.com/{{ twitter.username }}" target="_blank">
-                                <i class="fab fa-lg fa-twitter"></i>
-                            </a>
-                        {% endfor %}
-                    </div>
-                    {% if startup.links__extra_data.offrecovid %}
-                        <div class="text-center font-weight-bold pt-2">
-                            {{ startup.links__extra_data.offrecovid }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="card-footer border-warning bg-white">
-                    <div class="text-center">
-                        <small class="text-info font-weight-bold">
-                            Localisation : {{ startup.city|default("Inconnue", boolean=True) }}
-                            {% if startup.nb_employees %}
-                                &bull;
-                                Employés : {{ startup.nb_employees }}
-                            {% endif %}
-                            {% if startup.creation_date__year %}
-                                &bull;
-                                Création : {{ startup.creation_date__year }}
-                            {% endif %}
-                        </small>
-                    </div>
-                    <div class="text-center">
-                        {% for entity in startup.entity %}
-                            <span class="badge text-white" style="background-color: {{ entity.entity__color }}">
-                                {{ entity.entity__name_en }}
-                            </span>
-                        {% endfor %}
-                        {% for activity in startup.activity %}
-                            <span class="badge text-white" style="background-color: {{ activity.activity__color }}">
-                                {{ activity.activity__name_en }}
-                            </span>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+    {% if startups == None %}
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-exclamation-triangle"></i>
+                Site en maintenance
+            </h4>
+            <p>
+                Une intervention technique (rechargement de données, mise à jour, résolution d'incident) est en cours,
+                cela ne devrait prendre que quelques minutes, merci de bien vouloir patienter...
+            </p>
         </div>
-    {% endfor %}
-</div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            {% for startup in startups %}
+                <div class="col mb-4">
+                    <div id="startup-{{ startup.id }}" class="card border-warning rounded h-100">
+                        <div class="text-center pt-2">
+                            <img src="{{ url_for("static", filename="img/coeur.png") }}"
+                                 data-src="{{ startup.logo }}" height="100">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center text-danger font-weight-bold">
+                                {{ startup.name }}
+                            </h5>
+                            <p class="card-text text-muted text-justify">
+                                <small>{{ startup.value_proposition_fr|truncate }}</small>
+                            </p>
+                            <div class="text-center">
+                                <a class="text-danger" href="{{ startup.website_url }}">
+                                    {{ startup.website_url }}
+                                </a>
+                            </div>
+                            <div class="text-center pt-2">
+                                {% for linkedin in startup.linkedin %}
+                                    <a class="card-link" href="{{ linkedin.url }}" target="_blank">
+                                        <i class="fab fa-lg fa-linkedin"></i>
+                                    </a>
+                                {% endfor %}
+                                {% for twitter in startup.twitter %}
+                                    <a class="card-link" href="https://twitter.com/{{ twitter.username }}" target="_blank">
+                                        <i class="fab fa-lg fa-twitter"></i>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            {% if startup.links__extra_data.offrecovid %}
+                                <div class="text-center font-weight-bold pt-2">
+                                    {{ startup.links__extra_data.offrecovid }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer border-warning bg-white">
+                            <div class="text-center">
+                                <small class="text-info font-weight-bold">
+                                    Localisation : {{ startup.city|default("Inconnue", boolean=True) }}
+                                    {% if startup.nb_employees %}
+                                        &bull;
+                                        Employés : {{ startup.nb_employees }}
+                                    {% endif %}
+                                    {% if startup.creation_date__year %}
+                                        &bull;
+                                        Création : {{ startup.creation_date__year }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="text-center">
+                                {% for entity in startup.entity %}
+                                    <span class="badge text-white" style="background-color: {{ entity.entity__color }}">
+                                        {{ entity.entity__name_en }}
+                                    </span>
+                                {% endfor %}
+                                {% for activity in startup.activity %}
+                                    <span class="badge text-white" style="background-color: {{ activity.activity__color }}">
+                                        {{ activity.activity__name_en }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('img').each(function(i, e) {
+            let img = $(e), src = img.data('src');
+            if (!src) return;
+            $(e).attr('src', src);
+        });
+    });
+</script>
 {% endblock %}
