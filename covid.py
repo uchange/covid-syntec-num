@@ -8,6 +8,7 @@ from flask_caching import Cache
 
 URL = os.environ.get('URL')
 TOKEN = os.environ.get('TOKEN')
+TRACE = bool(os.environ.get('TRACE'))
 WS_FAMILLE, WS_TRAVAIL, WS_SANTE, WS_SANTE_PRO = (
     os.environ.get('WS_FAMILLE'),
     os.environ.get('WS_TRAVAIL'),
@@ -28,7 +29,9 @@ cache = Cache(app)
 def get_startups(workspace, category=None):
     try:
         with requests.Session() as session:
-            session.headers.update({'Authorization': f'Token {TOKEN}'})
+            session.headers.update({
+                'Authorization': f'Token {TOKEN}',
+            })
             # Startups
             results = session.get(URL + '/api/startup/', params=dict(
                 fields=','.join((
@@ -47,6 +50,7 @@ def get_startups(workspace, category=None):
                 links__workspace_id=workspace,
                 **(dict(links__extra_data__category=category) if category else {})
             ))
+            print(f"[{results.elapsed}] {results.url}") if TRACE else None
             startups = {}
             for result in results.json():
                 startups[result['id']] = result
@@ -69,6 +73,7 @@ def get_startups(workspace, category=None):
                     startup__links__workspace_id=workspace,
                     **(dict(startup__links__extra_data__category=category) if category else {})
                 ))
+                print(f"[{results.elapsed}] {results.url}") if TRACE else None
                 for result in results.json():
                     startup = startups[result['startup_id']]
                     element = startup.setdefault(type, [])
@@ -86,6 +91,7 @@ def get_startups(workspace, category=None):
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
             ))
+            print(f"[{results.elapsed}] {results.url}") if TRACE else None
             for result in results.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('linkedin', [])
@@ -104,6 +110,7 @@ def get_startups(workspace, category=None):
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
             ))
+            print(f"[{results.elapsed}] {results.url}") if TRACE else None
             for result in results.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('twitter', [])
@@ -118,7 +125,9 @@ def get_startups(workspace, category=None):
 def get_categories(workspace):
     try:
         with requests.Session() as session:
-            session.headers.update({'Authorization': f'Token {TOKEN}'})
+            session.headers.update({
+                'Authorization': f'Token {TOKEN}',
+            })
             results = session.get(URL + '/api/front/attribute/', params=dict(
                 name='category',
                 workspace_id=workspace,

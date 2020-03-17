@@ -28,12 +28,15 @@
                             <p class="card-text text-muted text-justify">
                                 <small>{{ startup.value_proposition_fr|truncate }}</small>
                             </p>
-                            <div class="text-center">
-                                <a class="text-danger" href="{{ startup.website_url }}">
-                                    {{ startup.website_url }}
-                                </a>
-                            </div>
-                            <div class="text-center pt-2">
+                            {% if startup.website_url %}
+                                <div class="text-center">
+                                    <a class="btn btn-sm btn-danger" href="{{ startup.website_url }}"
+                                       data-toggle="tooltip" data-placement="top" title="{{ startup.website_url }}">
+                                        Voir le site
+                                    </a>
+                                </div>
+                            {% endif %}
+                            <div class="text-center pt-3">
                                 {% for linkedin in startup.linkedin %}
                                     <a class="card-link" href="{{ linkedin.url }}" target="_blank">
                                         <i class="fab fa-lg fa-linkedin"></i>
@@ -46,8 +49,8 @@
                                 {% endfor %}
                             </div>
                             {% if startup.links__extra_data.offrecovid %}
-                                <div class="text-center font-weight-bold pt-2">
-                                    {{ startup.links__extra_data.offrecovid }}
+                                <div class="text-center pt-2">
+                                    <small class="font-weight-bold ">{{ startup.links__extra_data.offrecovid }}</small>
                                 </div>
                             {% endif %}
                         </div>
@@ -88,6 +91,8 @@
 {% block scripts %}
 <script>
     $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover();
         $('img').each(function(i, e) {
             let img = $(e), src = img.data('src');
             if (!src) return;
