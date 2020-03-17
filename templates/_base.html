@@ -52,20 +52,32 @@
                     aria-controls="navbar" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand d-block d-sm-none font-weight-bold">
+            <a class="navbar-brand d-block d-sm-none">
                 {% if page == 'about' %}
-                    <span>À propos</span>
+                    <span class="font-weight-bold">À propos</span>
                 {% elif page == 'famille' %}
-                    <span>Solutions familles</span>
+                    <span class="font-weight-bold">Solutions familles</span>
+                    <span class="badge badge-secondary align-top">
+                        {{ counts.famille }}
+                    </span>
                 {% elif page == 'travail' %}
-                    <span>Solutions travail</span>
+                    <span class="font-weight-bold">Solutions travail</span>
+                    <span class="badge badge-secondary align-top">
+                        {{ counts.travail }}
+                    </span>
                 {% elif page == 'sante' %}
-                    <span>Solutions patients</span>
+                    <span class="font-weight-bold">Solutions patients</span>
+                    <span class="badge badge-secondary align-top">
+                        {{ counts.sante }}
+                    </span>
                 {% elif page == 'sante_pro' %}
-                    <span>Professionnels de santé</span>
+                    <span class="font-weight-bold">Professionnels de santé</span>
+                    <span class="badge badge-secondary align-midd">
+                        {{ counts.sante_pro }}
+                    </span>
                 {% endif %}
             </a>
-            <div class="navbar-collapse collapse text-center font-weight-bold" id="navbar">
+            <div class="navbar-collapse collapse text-center" id="navbar">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item{% if page == 'about' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.about') }}">
@@ -74,22 +86,34 @@
                     </li>
                     <li class="nav-item{% if page == 'famille' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.famille') }}">
-                            Solutions Famille
+                            <span class="font-weight-bold">Solutions Famille</span>
+                            <span class="badge badge-secondary align-top">
+                                {{ counts.famille|default(0) }}
+                            </span>
                         </a>
                     </li>
                     <li class="nav-item{% if page == 'travail' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.travail') }}">
-                            Solutions Travail
+                            <span class="font-weight-bold">Solutions Travail</span>
+                            <span class="badge badge-secondary align-top">
+                                {{ counts.travail|default(0) }}
+                            </span>
                         </a>
                     </li>
                     <li class="nav-item{% if page == 'sante' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante') }}">
-                            Solutions Patients
+                            <span class="font-weight-bold">Solutions Patients</span>
+                            <span class="badge badge-secondary align-top">
+                                {{ counts.sante|default(0) }}
+                            </span>
                         </a>
                     </li>
                     <li class="nav-item{% if page == 'sante_pro' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante_pro') }}">
-                            Professionnels de santé
+                            <span class="font-weight-bold">Professionnels de santé</span>
+                            <span class="badge badge-secondary align-top">
+                                {{ counts.sante_pro|default(0) }}
+                            </span>
                         </a>
                     </li>
                 </ul>
@@ -102,18 +126,26 @@
                     aria-controls="subnavbar" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand d-block d-sm-none font-weight-bold">
+            <a class="navbar-brand d-block d-sm-none">
                 {% for category in categories %}
-                    {% if subpage == category.key %}{{ category.value }}{% endif %}
+                    {% if subpage == category.key %}
+                        <span class="font-weight-bold">{{ category.value }}</span>
+                        <span class="badge badge-secondary align-top">
+                            {{ subcounts[subpage]|default(0) }}
+                        </span>
+                    {% endif %}
                 {% endfor %}
                 {% if not subpage %}Toutes{% endif %}
             </a>
-            <div class="navbar-collapse collapse text-center font-weight-bold" id="subnavbar">
+            <div class="navbar-collapse collapse text-center" id="subnavbar">
                 <ul class="navbar-nav mx-auto">
                     {% for category in categories %}
                         <li class="nav-item{% if subpage == category.key %} active{% endif %}">
                             <a class="nav-link" href="{{ url_for(page, category=category.key) }}">
-                                {{ category.value }}
+                                <span class="font-weight-bold">{{ category.value }}</span>
+                                <span class="badge badge-secondary align-top">
+                                    {{ subcounts[category.key]|default(0) }}
+                                </span>
                             </a>
                         </li>
                     {% endfor %}
