@@ -51,7 +51,6 @@
                     data-toggle="collapse" data-target="#navbar"
                     aria-controls="navbar" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
-                <span>Menu</span>
             </button>
             <a class="navbar-brand d-block d-sm-none font-weight-bold">
                 {% if page == 'about' %}
@@ -102,12 +101,12 @@
                     data-toggle="collapse" data-target="#subnavbar"
                     aria-controls="subnavbar" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
-                <span>Sous-menu</span>
             </button>
             <a class="navbar-brand d-block d-sm-none font-weight-bold">
                 {% for category in categories %}
                     {% if subpage == category.key %}{{ category.value }}{% endif %}
                 {% endfor %}
+                {% if not subpage %}Toutes{% endif %}
             </a>
             <div class="navbar-collapse collapse text-center font-weight-bold" id="subnavbar">
                 <ul class="navbar-nav mx-auto">
