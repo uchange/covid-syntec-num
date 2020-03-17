@@ -1,9 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100">
+<html lang="fr" class="h-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Covid-19 Syntec Numérique</title>
+    <meta name="author" content="Syntec Numérique & U Change">
+    <meta name="description" content="Les solutions numériques pour répondre à la crise Covid-19">
+    <meta name=“keywords” content="Covid-19, Coronavirus, Syntec Numérique, U Change">
+    <meta property="og:url" content="{{ request.host_url }}">
+    <meta property="og:title" content="Les solutions numériques pour répondre à la crise Covid-19">
+    <meta property="og:description" content="Présente les acteurs du numérique présents sur le territoire français qui apportent des solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19">
+    <meta property="og:image" content="{{ url_for("static", filename="img/thumbnail.png") }}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for("static", filename="favicon/apple-icon-57x57.png") }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for("static", filename="favicon/apple-icon-60x60.png") }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for("static", filename="favicon/apple-icon-72x72.png") }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for("static", filename="favicon/apple-icon-76x76.png") }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for("static", filename="favicon/apple-icon-114x114.png") }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for("static", filename="favicon/apple-icon-120x120.png") }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for("static", filename="favicon/apple-icon-144x144.png") }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for("static", filename="favicon/apple-icon-152x152.png") }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for("static", filename="favicon/apple-icon-180x180.png") }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for("static", filename="favicon/android-icon-192x192.png") }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for("static", filename="favicon/favicon-32x32.png") }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for("static", filename="favicon/favicon-96x96.png") }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for("static", filename="favicon/favicon-16x16.png") }}">
+    <link rel="manifest" href="{{ url_for("static", filename="favicon/manifest.json") }}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{{ url_for("static", filename="favicon/ms-icon-144x144.png") }}">
+    <meta name="theme-color" content="#ffffff">
+    <title>Les solutions numériques pour répondre à la crise Covid-19</title>
     <link rel="stylesheet" href="{{ url_for("static", filename="css/bootstrap.min.css") }}">
 </head>
 <body class="d-flex flex-column h-100">
@@ -18,7 +42,7 @@
         <div class="row">
             <div class="col text-center text-white bg-info py-3">
                 <div class="">
-                    Les solutions numériques au service de la crise Covid-19
+                    Les solutions numériques pour répondre à la crise Covid-19
                 </div>
             </div>
         </div>
@@ -38,7 +62,7 @@
                     <span>Solutions travail</span>
                 {% elif page == 'sante' %}
                     <span>Solutions patients</span>
-                {% elif page == 'sante-pro' %}
+                {% elif page == 'sante_pro' %}
                     <span>Professionnels de santé</span>
                 {% endif %}
             </a>
@@ -64,7 +88,7 @@
                             Solutions Patients
                         </a>
                     </li>
-                    <li class="nav-item{% if page == 'sante-pro' %} active{% endif %}">
+                    <li class="nav-item{% if page == 'sante_pro' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante_pro') }}">
                             Professionnels de santé
                         </a>
@@ -72,6 +96,32 @@
                 </ul>
             </div>
         </nav>
+        {% if categories %}
+        <nav class="navbar navbar-expand-md navbar-light bg-light">
+            <button class="navbar-toggler collapsed" type="button"
+                    data-toggle="collapse" data-target="#subnavbar"
+                    aria-controls="subnavbar" aria-expanded="false" aria-label="">
+                <span class="navbar-toggler-icon"></span>
+                <span>Sous-menu</span>
+            </button>
+            <a class="navbar-brand d-block d-sm-none font-weight-bold">
+                {% for category in categories %}
+                    {% if subpage == category.key %}{{ category.value }}{% endif %}
+                {% endfor %}
+            </a>
+            <div class="navbar-collapse collapse text-center font-weight-bold" id="subnavbar">
+                <ul class="navbar-nav mx-auto">
+                    {% for category in categories %}
+                        <li class="nav-item{% if subpage == category.key %} active{% endif %}">
+                            <a class="nav-link" href="{{ url_for(page, category=category.key) }}">
+                                {{ category.value }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+        {% endif %}
     </header>
     <main class="flex-shrink-0 p-3" role="main">
         {% block content %}

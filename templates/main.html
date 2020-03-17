@@ -32,6 +32,11 @@
                             </a>
                         {% endfor %}
                     </div>
+                    {% if startup.extra_data.offrecovid %}
+                        <div class="text-center font-weight-bold pt-2">
+                            {{ startup.extra_data.offrecovid }}
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="card-footer border-warning bg-white">
                     <div class="text-center">
