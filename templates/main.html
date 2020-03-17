@@ -4,7 +4,7 @@
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
     {% for startup in startups %}
         <div class="col mb-4">
-            <div class="card border-warning rounded h-100">
+            <div id="startup-{{ startup.id }}" class="card border-warning rounded h-100">
                 <div class="text-center pt-2">
                     <img src="{{ startup.logo }}" height="100">
                 </div>
