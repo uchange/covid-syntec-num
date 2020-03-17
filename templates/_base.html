@@ -52,7 +52,7 @@
                     aria-controls="navbar" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand d-block d-sm-none">
+            <a class="navbar-brand d-block d-md-none">
                 {% if page == 'about' %}
                     <span class="font-weight-bold">À propos</span>
                 {% elif page == 'famille' %}
@@ -81,7 +81,7 @@
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item{% if page == 'about' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.about') }}">
-                            À propos
+                            <span class="font-weight-bold">À propos</span>
                         </a>
                     </li>
                     <li class="nav-item{% if page == 'famille' %} active{% endif %}">
@@ -126,7 +126,7 @@
                     aria-controls="subnavbar" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand d-block d-sm-none">
+            <a class="navbar-brand d-block d-md-none">
                 {% for category in categories %}
                     {% if subpage == category.key %}
                         <span class="font-weight-bold">{{ category.value }}</span>
@@ -135,7 +135,9 @@
                         </span>
                     {% endif %}
                 {% endfor %}
-                {% if not subpage %}Toutes{% endif %}
+                {% if not subpage %}
+                    <span class="font-weight-bold">Toutes</span>
+                {% endif %}
             </a>
             <div class="navbar-collapse collapse text-center" id="subnavbar">
                 <ul class="navbar-nav mx-auto">
