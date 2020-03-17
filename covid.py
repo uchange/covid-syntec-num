@@ -1,5 +1,7 @@
-import requests
 import os
+import requests
+import traceback
+
 from flask import Flask, render_template
 from flask_caching import Cache
 
@@ -24,102 +26,110 @@ cache = Cache(app)
 
 
 def get_startups(workspace, category=None):
-    with requests.Session() as session:
-        session.headers.update({'Authorization': f'Token {TOKEN}'})
-        # Startups
-        results = session.get(URL + '/api/startup/', params=dict(
-            fields=','.join((
-                'id',
-                'name',
-                'logo',
-                'value_proposition_fr',
-                'website_url',
-                'city',
-                'nb_employees',
-                'creation_date__year',
-                'links__extra_data',
-            )),
-            order_by='name',
-            all=1,
-            links__workspace_id=workspace,
-            **(dict(links__extra_data__category=category) if category else {})
-        )).json()
-        startups = {}
-        for result in results:
-            startups[result['id']] = result
-            if not result['logo']:
-                continue
-            result['logo'] = "/".join([URL, 'media', result['logo']])
-        # Activities and entity types
-        for type in ('activity', 'entity'):
-            results = session.get(URL + f'/api/startup{type}/', params=dict(
+    try:
+        with requests.Session() as session:
+            session.headers.update({'Authorization': f'Token {TOKEN}'})
+            # Startups
+            results = session.get(URL + '/api/startup/', params=dict(
                 fields=','.join((
-                    'startup_id',
-                    f'{type}__name_en',
-                    f'{type}__color',
+                    'id',
+                    'name',
+                    'logo',
+                    'value_proposition_fr',
+                    'website_url',
+                    'city',
+                    'nb_employees',
+                    'creation_date__year',
+                    'links__extra_data',
+                )),
+                order_by='name',
+                all=1,
+                links__workspace_id=workspace,
+                **(dict(links__extra_data__category=category) if category else {})
+            )).json()
+            startups = {}
+            for result in results:
+                startups[result['id']] = result
+                if not result['logo']:
+                    continue
+                result['logo'] = "/".join([URL, 'media', result['logo']])
+            # Activities and entity types
+            for type in ('activity', 'entity'):
+                results = session.get(URL + f'/api/startup{type}/', params=dict(
+                    fields=','.join((
+                        'startup_id',
+                        f'{type}__name_en',
+                        f'{type}__color',
+                    )),
+                    order_by=','.join((
+                        'startup__name',
+                        f'{type}__name_en',
+                    )),
+                    all=1,
+                    startup__links__workspace_id=workspace,
+                    **(dict(startup__links__extra_data__category=category) if category else {})
+                )).json()
+                for result in results:
+                    startup = startups[result['startup_id']]
+                    element = startup.setdefault(type, [])
+                    element.append(result)
+            # LinkedIn
+            results = session.get(URL + '/api/linkedin/', params=dict(
+                fields=','.join((
+                    'company_id',
+                    'url',
                 )),
                 order_by=','.join((
-                    'startup__name',
-                    f'{type}__name_en',
+                    'company__name',
                 )),
                 all=1,
-                startup__links__workspace_id=workspace,
-                **(dict(startup__links__extra_data__category=category) if category else {})
+                company__links__workspace_id=workspace,
+                **(dict(company__links__extra_data__category=category) if category else {})
             )).json()
             for result in results:
-                startup = startups[result['startup_id']]
-                element = startup.setdefault(type, [])
+                startup = startups[result['company_id']]
+                element = startup.setdefault('linkedin', [])
                 element.append(result)
-        # LinkedIn
-        results = session.get(URL + '/api/linkedin/', params=dict(
-            fields=','.join((
-                'company_id',
-                'url',
-            )),
-            order_by=','.join((
-                'company__name',
-            )),
-            all=1,
-            company__links__workspace_id=workspace,
-            **(dict(company__links__extra_data__category=category) if category else {})
-        )).json()
-        for result in results:
-            startup = startups[result['company_id']]
-            element = startup.setdefault('linkedin', [])
-            element.append(result)
-        # Twitter
-        results = session.get(URL + '/api/twitter/', params=dict(
-            fields=','.join((
-                'company_id',
-                'username',
-            )),
-            account_active=True,
-            order_by=','.join((
-                'company__name',
-            )),
-            all=1,
-            company__links__workspace_id=workspace,
-            **(dict(company__links__extra_data__category=category) if category else {})
-        )).json()
-        for result in results:
-            startup = startups[result['company_id']]
-            element = startup.setdefault('twitter', [])
-            element.append(result)
-        # Return results
-        return startups.values()
+            # Twitter
+            results = session.get(URL + '/api/twitter/', params=dict(
+                fields=','.join((
+                    'company_id',
+                    'username',
+                )),
+                account_active=True,
+                order_by=','.join((
+                    'company__name',
+                )),
+                all=1,
+                company__links__workspace_id=workspace,
+                **(dict(company__links__extra_data__category=category) if category else {})
+            )).json()
+            for result in results:
+                startup = startups[result['company_id']]
+                element = startup.setdefault('twitter', [])
+                element.append(result)
+            # Return results
+            return startups.values()
+    except:  # noqa
+        traceback.print_exc()
+    return []
 
 
 def get_categories(workspace):
-    with requests.Session() as session:
-        session.headers.update({'Authorization': f'Token {TOKEN}'})
-        results = session.get(URL + '/api/front/attribute/', params=dict(
-            name='category',
-            workspace_id=workspace,
-            all=1
-        )).json()
-        for result in results:
-            return sorted(result['enum'], key=lambda e: e['value'])
-        return []
+    try:
+        with requests.Session() as session:
+            session.headers.update({'Authorization': f'Token {TOKEN}'})
+            results = session.get(URL + '/api/front/attribute/', params=dict(
+                name='category',
+                workspace_id=workspace,
+                all=1
+            )).json()
+            for result in results:
+                return sorted(result['enum'], key=lambda e: e['value'])
+    except:  # noqa
+        traceback.print_exc()
+    return []
+
 
 
 @app.route('/')
