@@ -189,7 +189,6 @@ def get_counts(workspace=None):
         # Return results
         return counts, subcounts
     except:
-        raise
         return {}, {}
 
 
