@@ -1,3 +1,4 @@
+import logging
 import os
 import requests
 import traceback
@@ -8,7 +9,6 @@ from flask_caching import Cache
 
 URL = os.environ.get('URL')
 TOKEN = os.environ.get('TOKEN')
-TRACE = bool(os.environ.get('TRACE'))
 WS_FAMILLE, WS_TRAVAIL, WS_SANTE, WS_SANTE_PRO = (
     os.environ.get('WS_FAMILLE'),
     os.environ.get('WS_TRAVAIL'),
@@ -24,6 +24,10 @@ config = {
 app = application = Flask(__name__)
 app.config.from_mapping(config)
 cache = Cache(app)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(os.environ.get('LOGLEVEL', 'INFO'))
 
 
 def get_startups(workspace, category=None):
@@ -50,7 +54,7 @@ def get_startups(workspace, category=None):
                 links__workspace_id=workspace,
                 **(dict(links__extra_data__category=category) if category else {})
             ))
-            print(f"[{results.elapsed}] {results.url}") if TRACE else None
+            logger.debug(f"[{results.elapsed}] {results.url}")
             startups = {}
             for result in results.json():
                 startups[result['id']] = result
@@ -73,7 +77,7 @@ def get_startups(workspace, category=None):
                     startup__links__workspace_id=workspace,
                     **(dict(startup__links__extra_data__category=category) if category else {})
                 ))
-                print(f"[{results.elapsed}] {results.url}") if TRACE else None
+                logger.debug(f"[{results.elapsed}] {results.url}")
                 for result in results.json():
                     startup = startups[result['startup_id']]
                     element = startup.setdefault(type, [])
@@ -91,7 +95,7 @@ def get_startups(workspace, category=None):
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
             ))
-            print(f"[{results.elapsed}] {results.url}") if TRACE else None
+            logger.debug(f"[{results.elapsed}] {results.url}")
             for result in results.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('linkedin', [])
@@ -110,7 +114,7 @@ def get_startups(workspace, category=None):
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
             ))
-            print(f"[{results.elapsed}] {results.url}") if TRACE else None
+            logger.debug(f"[{results.elapsed}] {results.url}")
             for result in results.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('twitter', [])
