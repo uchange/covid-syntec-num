@@ -22,6 +22,7 @@ config = {
     'CACHE_TYPE': os.environ.get('CACHE_TYPE', 'filesystem'),
     'CACHE_DIR': os.environ.get('CACHE_DIR', './cache/'),
     'CACHE_DEFAULT_TIMEOUT': int(os.environ.get('CACHE_TIMEOUT', 900)),
+    'SITEMAP_URL_SCHEME': 'https',
 }
 app = application = Flask(__name__)
 app.config.from_mapping(config)
