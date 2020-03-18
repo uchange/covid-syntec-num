@@ -8,7 +8,7 @@
     <meta name=“keywords” content="Covid-19, Coronavirus, Syntec Numérique, U Change">
     <meta property="og:url" content="{{ request.host_url }}">
     <meta property="og:title" content="Les solutions numériques pour répondre à la crise Covid-19">
-    <meta property="og:description" content="Présente les acteurs du numérique présents sur le territoire français qui apportent des solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19">
+    <meta property="og:description" content="Les acteurs du numérique présents sur le territoire français qui apportent des solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19">
     <meta property="og:image" content="{{ url_for("static", filename="img/thumbnail.png") }}">
     <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for("static", filename="favicon/apple-icon-57x57.png") }}">
     <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for("static", filename="favicon/apple-icon-60x60.png") }}">
@@ -42,11 +42,12 @@
         <div class="row">
             <div class="col text-center text-white bg-info py-3">
                 <div class="">
-                    Les solutions numériques pour répondre à la crise Covid-19
+                    Référencement gratuit, dynamique et automatisé de tous les acteurs du numérique apportant des
+                    solutions pour répondre à la crise Covid-19.
                 </div>
             </div>
         </div>
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <nav class="row navbar navbar-expand-md navbar-dark bg-dark">
             <button class="navbar-toggler collapsed" type="button"
                     data-toggle="collapse" data-target="#navbar"
                     aria-controls="navbar" aria-expanded="false" aria-label="">
@@ -57,22 +58,22 @@
                     <span class="font-weight-bold">À propos</span>
                 {% elif page == 'famille' %}
                     <span class="font-weight-bold">Solutions familles</span>
-                    <span class="badge badge-secondary align-top">
+                    <span class="badge badge-light align-top">
                         {{ counts.famille }}
                     </span>
                 {% elif page == 'travail' %}
                     <span class="font-weight-bold">Solutions travail</span>
-                    <span class="badge badge-secondary align-top">
+                    <span class="badge badge-light align-top">
                         {{ counts.travail }}
                     </span>
                 {% elif page == 'sante' %}
                     <span class="font-weight-bold">Solutions patients</span>
-                    <span class="badge badge-secondary align-top">
+                    <span class="badge badge-light align-top">
                         {{ counts.sante }}
                     </span>
                 {% elif page == 'sante_pro' %}
                     <span class="font-weight-bold">Professionnels de santé</span>
-                    <span class="badge badge-secondary align-midd">
+                    <span class="badge badge-light align-midd">
                         {{ counts.sante_pro }}
                     </span>
                 {% endif %}
@@ -87,7 +88,7 @@
                     <li class="nav-item{% if page == 'famille' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.famille') }}">
                             <span class="font-weight-bold">Solutions Famille</span>
-                            <span class="badge badge-secondary align-top">
+                            <span class="badge badge-light align-top">
                                 {{ counts.famille|default(0) }}
                             </span>
                         </a>
@@ -95,7 +96,7 @@
                     <li class="nav-item{% if page == 'travail' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.travail') }}">
                             <span class="font-weight-bold">Solutions Travail</span>
-                            <span class="badge badge-secondary align-top">
+                            <span class="badge badge-light align-top">
                                 {{ counts.travail|default(0) }}
                             </span>
                         </a>
@@ -103,7 +104,7 @@
                     <li class="nav-item{% if page == 'sante' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante') }}">
                             <span class="font-weight-bold">Solutions Patients</span>
-                            <span class="badge badge-secondary align-top">
+                            <span class="badge badge-light align-top">
                                 {{ counts.sante|default(0) }}
                             </span>
                         </a>
@@ -111,7 +112,7 @@
                     <li class="nav-item{% if page == 'sante_pro' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante_pro') }}">
                             <span class="font-weight-bold">Professionnels de santé</span>
-                            <span class="badge badge-secondary align-top">
+                            <span class="badge badge-light align-top">
                                 {{ counts.sante_pro|default(0) }}
                             </span>
                         </a>
@@ -120,7 +121,7 @@
             </div>
         </nav>
         {% if categories %}
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <nav class="row navbar navbar-expand-md navbar-light bg-light">
             <button class="navbar-toggler collapsed" type="button"
                     data-toggle="collapse" data-target="#subnavbar"
                     aria-controls="subnavbar" aria-expanded="false" aria-label="">
@@ -144,7 +145,7 @@
                     {% for category in categories %}
                         <li class="nav-item{% if subpage == category.key %} active{% endif %}">
                             <a class="nav-link" href="{{ url_for(page, category=category.key) }}">
-                                <span class="font-weight-bold">{{ category.value }}</span>
+                                <span class="{% if subpage == category.key %}font-weight-bold{% endif %}">{{ category.value }}</span>
                                 <span class="badge badge-secondary align-top">
                                     {{ subcounts[category.key]|default(0) }}
                                 </span>
@@ -164,10 +165,18 @@
     <footer class="footer mt-auto">
         <div class="row">
             <div class="col text-center text-white bg-info py-2">
-                Propulsé par
-                <a href="https://motherbase.ai" target="_blank" class="">
-                    <img src="{{ url_for("static", filename="img/motherbase.svg") }}" width="150" alt="Motherbase">
-                </a>
+                <span class="small">
+                    <i class="fas fa-info-circle"></i>
+                    Pour référencer votre offre, un tweet depuis votre compte entreprise à
+                    <a class="text-white" href="https://twitter.com/covidsyntecnum" target="_blank">@CovidSyntecNum</a> suffit.
+                </span>
+                <br />
+                <span>
+                    Propulsé par
+                    <a href="https://motherbase.ai" target="_blank" class="">
+                        <img src="{{ url_for("static", filename="img/motherbase.svg") }}" width="150" alt="Motherbase">
+                    </a>
+                </span>
             </div>
         </div>
     </footer>

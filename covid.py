@@ -5,6 +5,7 @@ import traceback
 
 from flask import Flask, render_template
 from flask_caching import Cache
+from flask_sitemap import Sitemap
 
 
 URL = os.environ.get('URL')
@@ -24,7 +25,7 @@ config = {
 }
 app = application = Flask(__name__)
 app.config.from_mapping(config)
-cache = Cache(app)
+cache, sitemap = Cache(app), Sitemap(app)
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -42,7 +43,7 @@ def get_startups(workspace, category=None):
         with requests.Session() as session:
             session.headers.update(HEADERS)
             # Startups
-            results = session.get(URL + '/api/startup/', params=dict(
+            response = session.get(URL + '/api/startup/', params=dict(
                 fields=','.join((
                     'id',
                     'name',
@@ -59,15 +60,15 @@ def get_startups(workspace, category=None):
                 links__workspace_id=workspace,
                 **(dict(links__extra_data__category=category) if category else {})
             ))
-            logger.debug(f"[{results.elapsed}] {results.url}")
-            for result in results.json():
+            logger.debug(f"[{response.elapsed}] {response.url}")
+            for result in response.json():
                 startups[result['id']] = result
                 if not result['logo']:
                     continue
                 result['logo'] = "/".join([URL, 'media', result['logo']])
             # Activities and entity types
             for type in ('activity', 'entity'):
-                results = session.get(URL + f'/api/startup{type}/', params=dict(
+                response = session.get(URL + f'/api/startup{type}/', params=dict(
                     fields=','.join((
                         'startup_id',
                         f'{type}__name_en',
@@ -81,13 +82,13 @@ def get_startups(workspace, category=None):
                     startup__links__workspace_id=workspace,
                     **(dict(startup__links__extra_data__category=category) if category else {})
                 ))
-                logger.debug(f"[{results.elapsed}] {results.url}")
-                for result in results.json():
+                logger.debug(f"[{response.elapsed}] {response.url}")
+                for result in response.json():
                     startup = startups[result['startup_id']]
                     element = startup.setdefault(type, [])
                     element.append(result)
             # LinkedIn
-            results = session.get(URL + '/api/linkedin/', params=dict(
+            response = session.get(URL + '/api/linkedin/', params=dict(
                 fields=','.join((
                     'company_id',
                     'url',
@@ -99,13 +100,13 @@ def get_startups(workspace, category=None):
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
             ))
-            logger.debug(f"[{results.elapsed}] {results.url}")
-            for result in results.json():
+            logger.debug(f"[{response.elapsed}] {response.url}")
+            for result in response.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('linkedin', [])
                 element.append(result)
             # Twitter
-            results = session.get(URL + '/api/twitter/', params=dict(
+            response = session.get(URL + '/api/twitter/', params=dict(
                 fields=','.join((
                     'company_id',
                     'username',
@@ -118,8 +119,8 @@ def get_startups(workspace, category=None):
                 company__links__workspace_id=workspace,
                 **(dict(company__links__extra_data__category=category) if category else {})
             ))
-            logger.debug(f"[{results.elapsed}] {results.url}")
-            for result in results.json():
+            logger.debug(f"[{response.elapsed}] {response.url}")
+            for result in response.json():
                 startup = startups[result['company_id']]
                 element = startup.setdefault('twitter', [])
                 element.append(result)
@@ -134,22 +135,30 @@ def get_categories(workspace):
     """
     Get categories of a workspace
     """
+    results = {}
+    many = not isinstance(workspace, str)
     if not workspace:
-        return []
+        return results
     try:
         with requests.Session() as session:
             session.headers.update(HEADERS)
-            results = session.get(URL + '/api/front/attribute/', params=dict(
-                name='category',
-                workspace_id=workspace,
-                all=1
-            ))
-            logger.debug(f"[{results.elapsed}] {results.url}")
-            for result in results.json():
-                return sorted(result['enum'], key=lambda e: e['value'])
+            params = dict(name='category', all=1)
+            if many:
+                params.update(workspace_id__in=','.join(workspace))
+            else:
+                params.update(workspace_id=workspace)
+            response = session.get(URL + '/api/front/attribute/', params=params)
+            logger.debug(f"[{response.elapsed}] {response.url}")
+            # Return results
+            for result in response.json():
+                categories = sorted(result['enum'], key=lambda e: e['value'])
+                if not many:
+                    return categories
+                results[str(result['workspace_id'])] = categories
+            return results
     except:  # noqa
         traceback.print_exc()
-    return []
+    return results
 
 
 def get_counts(workspace=None):
@@ -161,29 +170,29 @@ def get_counts(workspace=None):
         with requests.Session() as session:
             session.headers.update(HEADERS)
             # Counts by workspace
-            results = session.get(URL + '/api/front/link', params=dict(
+            response = session.get(URL + '/api/front/link', params=dict(
                 workspace__in=','.join(WORKSPACES.values()),
                 company__startup__isnull=False,
                 group_by='workspace_id',
                 count='id',
                 all=1,
             ))
-            logger.debug(f"[{results.elapsed}] {results.url}")
+            logger.debug(f"[{response.elapsed}] {response.url}")
             pages = {wid: page for page, wid in WORKSPACES.items()}
-            for result in results.json():
+            for result in response.json():
                 page = pages.get(str(result['workspace_id']))
                 counts[page] = result['id_count']
             # Counts by category in workspace
             if workspace:
-                results = session.get(URL + '/api/front/link', params=dict(
+                response = session.get(URL + '/api/front/link', params=dict(
                     workspace=workspace,
                     company__startup__isnull=False,
                     group_by='extra_data__category',
                     count='id',
                     all=1,
                 ))
-                logger.debug(f"[{results.elapsed}] {results.url}")
-                for result in results.json():
+                logger.debug(f"[{response.elapsed}] {response.url}")
+                for result in response.json():
                     subpage = result['extra_data__category']
                     subcounts[subpage] = result['id_count']
         # Return results
@@ -239,3 +248,12 @@ def sante(category=None):
 @cache.cached()
 def sante_pro(category=None):
     return get_page('sante_pro', category)
+
+
+@sitemap.register_generator
+def sitemap():
+    categories = get_categories(WORKSPACES.values())
+    for page, workspace in WORKSPACES.items():
+        yield page, {}
+        for category in categories.get(workspace, []):
+            yield page, dict(category=category['key'])

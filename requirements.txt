@@ -1,4 +1,5 @@
 flask==1.1.1
 flask-caching==1.8.0
+flask-sitemap==0.3.0
 gunicorn==20.0.4
 requests==2.23.0

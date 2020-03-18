@@ -26,7 +26,7 @@
                                 {{ startup.name }}
                             </h5>
                             <p class="card-text text-muted text-justify">
-                                <small>{{ startup.value_proposition_fr|truncate }}</small>
+                                <span class="small">{{ startup.value_proposition_fr|truncate }}</span>
                             </p>
                             {% if startup.website_url %}
                                 <div class="text-center">
@@ -50,13 +50,13 @@
                             </div>
                             {% if startup.links__extra_data.offrecovid %}
                                 <div class="text-center pt-2">
-                                    <small class="font-weight-bold ">{{ startup.links__extra_data.offrecovid }}</small>
+                                    <span class="small font-weight-bold ">{{ startup.links__extra_data.offrecovid }}</span>
                                 </div>
                             {% endif %}
                         </div>
                         <div class="card-footer border-warning bg-white">
                             <div class="text-center">
-                                <small class="text-info font-weight-bold">
+                                <span class="small text-info font-weight-bold">
                                     Localisation : {{ startup.city|default("Inconnue", boolean=True) }}
                                     {% if startup.nb_employees %}
                                         &bull;
@@ -66,7 +66,7 @@
                                         &bull;
                                         Création : {{ startup.creation_date__year }}
                                     {% endif %}
-                                </small>
+                                </span>
                             </div>
                             <div class="text-center">
                                 {% for entity in startup.entity %}
