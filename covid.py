@@ -44,29 +44,30 @@ def get_startups(workspace, category=None):
         with requests.Session() as session:
             session.headers.update(HEADERS)
             # Startups
-            response = session.get(URL + '/api/startup/', params=dict(
+            response = session.get(URL + '/api/front/link/', params=dict(
                 fields=','.join((
-                    'id',
-                    'name',
-                    'logo',
-                    'value_proposition_fr',
-                    'website_url',
-                    'city',
-                    'nb_employees',
-                    'creation_date__year',
-                    'links__extra_data',
+                    'company_id',
+                    'company__name',
+                    'company__logo',
+                    'company__website_url',
+                    'company__nb_employees',
+                    'company__startup__value_proposition_fr',
+                    'company__startup__city',
+                    'company__startup__creation_date__year',
+                    'extra_data',
                 )),
-                order_by='name',
+                company__startup__isnull=0,
+                order_by='company__name',
                 all=1,
-                links__workspace_id=workspace,
-                **(dict(links__extra_data__category=category) if category else {})
+                workspace_id=workspace,
+                **(dict(extra_data__category=category) if category else {})
             ))
             logger.debug(f"[{response.elapsed}] {response.url}")
             for result in response.json():
-                startups[result['id']] = result
-                if not result['logo']:
+                startups[result['company_id']] = result
+                if not result['company__logo']:
                     continue
-                result['logo'] = "/".join([URL, 'media', result['logo']])
+                result['company__logo'] = "/".join([URL, 'media', result['company__logo']])
             # Activities and entity types
             for type in ('activity', 'entity'):
                 response = session.get(URL + f'/api/startup{type}/', params=dict(

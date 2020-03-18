@@ -16,22 +16,24 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
             {% for startup in startups %}
                 <div class="col mb-4">
-                    <div id="startup-{{ startup.id }}" class="card border-warning rounded h-100">
+                    <div id="startup-{{ startup.company_id }}" class="card border-warning rounded h-100">
                         <div class="text-center pt-2">
                             <img src="{{ url_for("static", filename="img/coeur.png") }}"
-                                 data-src="{{ startup.logo }}" height="100">
+                                 data-src="{{ startup.company__logo }}" height="100">
                         </div>
                         <div class="card-body">
                             <h5 class="card-title text-center text-danger font-weight-bold">
-                                {{ startup.name }}
+                                {{ startup.company__name }}
                             </h5>
                             <p class="card-text text-muted text-justify">
-                                <span class="small">{{ startup.value_proposition_fr|truncate }}</span>
+                                <span class="small">
+                                    {{ startup.company__startup__value_proposition_fr|truncate }}
+                                </span>
                             </p>
-                            {% if startup.website_url %}
+                            {% if startup.company__website_url %}
                                 <div class="text-center">
-                                    <a class="btn btn-sm btn-danger" target="_blank" href="{{ startup.website_url }}"
-                                       data-toggle="tooltip" data-placement="top" title="{{ startup.website_url }}">
+                                    <a class="btn btn-sm btn-danger" target="_blank" href="{{ startup.company__website_url }}"
+                                       data-toggle="tooltip" data-placement="top" title="{{ startup.company__website_url }}">
                                         Voir le site
                                     </a>
                                 </div>
@@ -48,23 +50,23 @@
                                     </a>
                                 {% endfor %}
                             </div>
-                            {% if startup.links__extra_data.offrecovid %}
+                            {% if startup.extra_data.offrecovid %}
                                 <div class="text-center pt-2">
-                                    <span class="small font-weight-bold ">{{ startup.links__extra_data.offrecovid }}</span>
+                                    <span class="small font-weight-bold ">{{ startup.extra_data.offrecovid }}</span>
                                 </div>
                             {% endif %}
                         </div>
                         <div class="card-footer border-warning bg-white">
                             <div class="text-center">
                                 <span class="small text-info font-weight-bold">
-                                    Localisation : {{ startup.city|default("Inconnue", boolean=True) }}
-                                    {% if startup.nb_employees %}
+                                    Localisation : {{ startup.company__startup__city|default("Inconnue", boolean=True) }}
+                                    {% if startup.company__nb_employees %}
                                         &bull;
-                                        Employés : {{ startup.nb_employees }}
+                                        Employés : {{ startup.company__nb_employees }}
                                     {% endif %}
-                                    {% if startup.creation_date__year %}
+                                    {% if startup.company__startup__creation_date__year %}
                                         &bull;
-                                        Création : {{ startup.creation_date__year }}
+                                        Création : {{ startup.company__startup__creation_date__year }}
                                     {% endif %}
                                 </span>
                             </div>
