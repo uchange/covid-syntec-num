@@ -49,7 +49,7 @@ def get_startups(workspace=None, category=None, search=None):
                 filters=(
                     f'or(company__name__unaccent__icontains:{terms},'
                     f'company__startup__value_proposition_fr__unaccent__icontains:{terms},'
-                    f'extra_data__offrecovid__unaccent__icontains:{terms})'
+                    f'extra_data__offrecovid__icontains:{terms})'
                 ))
         with requests.Session() as session:
             session.headers.update(HEADERS)
