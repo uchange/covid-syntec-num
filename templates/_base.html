@@ -185,6 +185,16 @@
     <script src="{{ url_for("static", filename="js/popper.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/bootstrap.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/fontawesome.min.js") }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="popover"]').popover();
+            $('img').each(function(i, e) {
+                let img = $(e), src = img.data('src');
+                if (src) $(e).attr('src', src);
+            });
+        });
+    </script>
     {% include "_tracking.html" %}
     {% block scripts %}{% endblock %}
 </body>

@@ -1,9 +1,11 @@
 import logging
 import os
+from urllib.parse import quote_plus
+
 import requests
 import traceback
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_caching import Cache
 from flask_sitemap import Sitemap
 
@@ -33,18 +35,25 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(os.environ.get('LOGLEVEL', 'INFO'))
 
 
-def get_startups(workspace, category=None):
+def get_startups(workspace=None, category=None, search=None):
     """
     Get startups from Motherbase with activities, entity types, linkedin and twitter accounts
     """
-    if not workspace:
-        return {}
     try:
         startups = {}
+        workspaces = ','.join([workspace] if workspace else WORKSPACES.values())
+        if search:
+            terms = quote_plus(search)
+            search = dict(
+                distinct='company__name',
+                filters=(
+                    f'or(company__name__unaccent__icontains:{terms},'
+                    f'company__startup__value_proposition_fr__unaccent__icontains:{terms})'
+                ))
         with requests.Session() as session:
             session.headers.update(HEADERS)
             # Startups
-            response = session.get(URL + '/api/front/link/', params=dict(
+            params = dict(
                 fields=','.join((
                     'company_id',
                     'company__name',
@@ -59,73 +68,100 @@ def get_startups(workspace, category=None):
                 company__startup__isnull=0,
                 order_by='company__name',
                 all=1,
-                workspace_id=workspace,
-                **(dict(extra_data__category=category) if category else {})
-            ))
+                workspace_id__in=workspaces,
+            )
+            if category:
+                params.update(extra_data__category=category)
+            if search:
+                params.update(search)
+            response = session.get(URL + '/api/front/link/', params=params)
             logger.debug(f"[{response.elapsed}] {response.url}")
             for result in response.json():
                 startups[result['company_id']] = result
                 if not result['company__logo']:
                     continue
                 result['company__logo'] = "/".join([URL, 'media', result['company__logo']])
+            startup_ids = ','.join(map(str, startups.keys()))
             # Activities and entity types
-            for type in ('activity', 'entity'):
-                response = session.get(URL + f'/api/startup{type}/', params=dict(
+            if startups:
+                for type in ('activity', 'entity'):
+                    params = dict(
+                        fields=','.join((
+                            'startup_id',
+                            f'{type}__name_en',
+                            f'{type}__color',
+                        )),
+                        order_by=','.join((
+                            'startup__name',
+                            f'{type}__name_en',
+                        )),
+                        all=1,
+                    )
+                    if category:
+                        params.update(startup__links__extra_data__category=category)
+                    if search:
+                        params.update(startup_id__in=startup_ids)
+                    else:
+                        params.update(startup__links__workspace_id__in=workspaces)
+                    response = session.get(URL + f'/api/startup{type}/', params=params)
+                    logger.debug(f"[{response.elapsed}] {response.url}")
+                    for result in response.json():
+                        startup = startups.get(result['startup_id'])
+                        if not startup:
+                            continue
+                        element = startup.setdefault(type, [])
+                        element.append(result)
+                # LinkedIn
+                params = dict(
                     fields=','.join((
-                        'startup_id',
-                        f'{type}__name_en',
-                        f'{type}__color',
+                        'company_id',
+                        'url',
                     )),
                     order_by=','.join((
-                        'startup__name',
-                        f'{type}__name_en',
+                        'company__name',
                     )),
                     all=1,
-                    startup__links__workspace_id=workspace,
-                    **(dict(startup__links__extra_data__category=category) if category else {})
-                ))
+                )
+                if category:
+                    params.update(company__links__extra_data__category=category)
+                if search:
+                    params.update(company_id__in=startup_ids)
+                else:
+                    params.update(company__links__workspace_id__in=workspaces)
+                response = session.get(URL + '/api/linkedin/', params=params)
                 logger.debug(f"[{response.elapsed}] {response.url}")
                 for result in response.json():
-                    startup = startups[result['startup_id']]
-                    element = startup.setdefault(type, [])
+                    startup = startups.get(result['company_id'])
+                    if not startup:
+                        continue
+                    element = startup.setdefault('linkedin', [])
                     element.append(result)
-            # LinkedIn
-            response = session.get(URL + '/api/linkedin/', params=dict(
-                fields=','.join((
-                    'company_id',
-                    'url',
-                )),
-                order_by=','.join((
-                    'company__name',
-                )),
-                all=1,
-                company__links__workspace_id=workspace,
-                **(dict(company__links__extra_data__category=category) if category else {})
-            ))
-            logger.debug(f"[{response.elapsed}] {response.url}")
-            for result in response.json():
-                startup = startups[result['company_id']]
-                element = startup.setdefault('linkedin', [])
-                element.append(result)
-            # Twitter
-            response = session.get(URL + '/api/twitter/', params=dict(
-                fields=','.join((
-                    'company_id',
-                    'username',
-                )),
-                account_active=True,
-                order_by=','.join((
-                    'company__name',
-                )),
-                all=1,
-                company__links__workspace_id=workspace,
-                **(dict(company__links__extra_data__category=category) if category else {})
-            ))
-            logger.debug(f"[{response.elapsed}] {response.url}")
-            for result in response.json():
-                startup = startups[result['company_id']]
-                element = startup.setdefault('twitter', [])
-                element.append(result)
+                # Twitter
+                params = dict(
+                    fields=','.join((
+                        'company_id',
+                        'username',
+                    )),
+                    account_active=True,
+                    order_by=','.join((
+                        'company__name',
+                    )),
+                    all=1,
+                )
+                if category:
+                    params.update(company__links__extra_data__category=category)
+                if search:
+                    params.update(company_id__in=startup_ids)
+                else:
+                    params.update(company__links__workspace_id__in=workspaces)
+                response = session.get(URL + '/api/twitter/', params=params)
+                logger.debug(f"[{response.elapsed}] {response.url}")
+                for result in response.json():
+                    startup = startups.get(result['company_id'])
+                    if not startup:
+                        continue
+                    element = startup.setdefault('twitter', [])
+                    element.append(result)
         # Return results
         return startups.values()
     except:  # noqa
@@ -133,28 +169,27 @@ def get_startups(workspace, category=None):
     return None
 
 
-def get_categories(workspace):
+def get_categories(workspace=None):
     """
     Get categories of a workspace
     """
     results = {}
-    many = not isinstance(workspace, str)
     if not workspace:
         return results
     try:
+        workspaces = ','.join([workspace] if workspace else WORKSPACES.values())
         with requests.Session() as session:
             session.headers.update(HEADERS)
-            params = dict(name='category', all=1)
-            if many:
-                params.update(workspace_id__in=','.join(workspace))
-            else:
-                params.update(workspace_id=workspace)
-            response = session.get(URL + '/api/front/attribute/', params=params)
+            response = session.get(URL + '/api/front/attribute/', params=dict(
+                name='category',
+                workspace_id__in=workspaces,
+                all=1,
+            ))
             logger.debug(f"[{response.elapsed}] {response.url}")
             # Return results
             for result in response.json():
                 categories = sorted(result['enum'], key=lambda e: e['value'])
-                if not many:
+                if workspace:
                     return categories
                 results[str(result['workspace_id'])] = categories
             return results
@@ -252,9 +287,23 @@ def sante_pro(category=None):
     return get_page('sante_pro', category)
 
 
+@app.route('/recherche/')
+def search():
+    counts, subcounts = get_counts()
+    search = request.args.get('q')
+    if search:
+        startups = get_startups(search=search)
+    else:
+        startups = {}
+    return render_template(
+        'search.html', page='search',
+        counts=counts, subcounts=subcounts,
+        startups=startups)
+
+
 @sitemap.register_generator
 def sitemap():
-    categories = get_categories(WORKSPACES.values())
+    categories = get_categories()
     for page, workspace in WORKSPACES.items():
         yield page, {}
         for category in categories.get(workspace, []):
