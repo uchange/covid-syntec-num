@@ -48,7 +48,8 @@ def get_startups(workspace=None, category=None, search=None):
                 distinct='company__name',
                 filters=(
                     f'or(company__name__unaccent__icontains:{terms},'
-                    f'company__startup__value_proposition_fr__unaccent__icontains:{terms})'
+                    f'company__startup__value_proposition_fr__unaccent__icontains:{terms},'
+                    f'extra_data__offrecovid__unaccent__icontains:{terms})'
                 ))
         with requests.Session() as session:
             session.headers.update(HEADERS)
@@ -291,10 +292,7 @@ def sante_pro(category=None):
 def search():
     counts, subcounts = get_counts()
     search = request.args.get('q')
-    if search:
-        startups = get_startups(search=search)
-    else:
-        startups = {}
+    startups = get_startups(search=search) if search else {}
     return render_template(
         'search.html', page='search',
         counts=counts, subcounts=subcounts,
