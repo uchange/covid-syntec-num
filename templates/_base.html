@@ -56,23 +56,25 @@
             <a class="navbar-brand d-block d-md-none">
                 {% if page == 'about' %}
                     <span class="font-weight-bold">À propos</span>
+                {% elif page == 'search' %}
+                    <span class="font-weight-bold">Recherche</span>
                 {% elif page == 'famille' %}
-                    <span class="font-weight-bold">Solutions familles</span>
+                    <span class="font-weight-bold">Famille</span>
                     <span class="badge badge-light align-top">
                         {{ counts.famille }}
                     </span>
                 {% elif page == 'travail' %}
-                    <span class="font-weight-bold">Solutions travail</span>
+                    <span class="font-weight-bold">Travail</span>
                     <span class="badge badge-light align-top">
                         {{ counts.travail }}
                     </span>
                 {% elif page == 'sante' %}
-                    <span class="font-weight-bold">Solutions patients</span>
+                    <span class="font-weight-bold">Patients</span>
                     <span class="badge badge-light align-top">
                         {{ counts.sante }}
                     </span>
                 {% elif page == 'sante_pro' %}
-                    <span class="font-weight-bold">Professionnels de santé</span>
+                    <span class="font-weight-bold">Professionnels de Santé</span>
                     <span class="badge badge-light align-midd">
                         {{ counts.sante_pro }}
                     </span>
@@ -85,9 +87,14 @@
                             <span class="font-weight-bold">À propos</span>
                         </a>
                     </li>
+                    <li class="nav-item{% if page == 'search' %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.search') }}">
+                            <span class="font-weight-bold">Recherche</span>
+                        </a>
+                    </li>
                     <li class="nav-item{% if page == 'famille' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.famille') }}">
-                            <span class="font-weight-bold">Solutions Famille</span>
+                            <span class="font-weight-bold">Famille</span>
                             <span class="badge badge-light align-top">
                                 {{ counts.famille|default(0) }}
                             </span>
@@ -95,7 +102,7 @@
                     </li>
                     <li class="nav-item{% if page == 'travail' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.travail') }}">
-                            <span class="font-weight-bold">Solutions Travail</span>
+                            <span class="font-weight-bold">Travail</span>
                             <span class="badge badge-light align-top">
                                 {{ counts.travail|default(0) }}
                             </span>
@@ -103,7 +110,7 @@
                     </li>
                     <li class="nav-item{% if page == 'sante' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante') }}">
-                            <span class="font-weight-bold">Solutions Patients</span>
+                            <span class="font-weight-bold">Patients</span>
                             <span class="badge badge-light align-top">
                                 {{ counts.sante|default(0) }}
                             </span>
@@ -111,7 +118,7 @@
                     </li>
                     <li class="nav-item{% if page == 'sante_pro' %} active{% endif %}">
                         <a class="nav-link" href="{{ url_for('.sante_pro') }}">
-                            <span class="font-weight-bold">Professionnels de santé</span>
+                            <span class="font-weight-bold">Professionnels de Santé</span>
                             <span class="badge badge-light align-top">
                                 {{ counts.sante_pro|default(0) }}
                             </span>
