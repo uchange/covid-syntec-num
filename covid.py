@@ -4,7 +4,7 @@ import os
 import requests
 from urllib.parse import quote_plus
 
-from flask import Flask, abort, render_template, request
+from flask import Flask, abort, render_template, request, url_for
 from flask_caching import Cache
 from flask_sitemap import Sitemap
 
@@ -32,6 +32,7 @@ config = {
     'SITEMAP_URL_SCHEME': 'https',
 }
 app = application = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY')
 app.config.from_mapping(config)
 cache, sitemap = Cache(app), Sitemap(app)
 
@@ -282,9 +283,18 @@ def about():
         counts=counts, subcounts=subcounts)
 
 
+@app.route('/legal/')
+@cache.cached()
+def legal():
+    counts, subcounts = get_counts()
+    return render_template(
+        'legal.html', page='legal', subpage=None,
+        counts=counts, subcounts=subcounts)
+
+
 @app.route('/page/<page>/')
 @app.route('/page/<page>/<category>/')
-@cache.cached()
+@cache.cached(query_string=True)
 def getpage(page=None, category=None):
     workspace = WORKSPACES.get(page)
     if not workspace:
@@ -302,7 +312,7 @@ def getpage(page=None, category=None):
 @app.route('/map/')
 @app.route('/map/<page>/')
 @app.route('/map/<page>/<category>/')
-@cache.cached()
+@cache.cached(query_string=True)
 def getmap(page=None, category=None):
     categories = []
     search = request.args.get('q')
