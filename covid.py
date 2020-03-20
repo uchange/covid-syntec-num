@@ -266,7 +266,7 @@ def get_counts(workspace=None):
             json.dump(results, file)
     except:
         if not os.path.exists(cache_file):
-            return None
+            return {}, {}
         # Get results from cache
         with open(cache_file, 'r') as file:
             results = json.load(file)
