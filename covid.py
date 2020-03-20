@@ -304,11 +304,13 @@ def getpage(page=None, category=None):
 @app.route('/map/<page>/<category>/')
 @cache.cached()
 def getmap(page=None, category=None):
+    categories = []
     search = request.args.get('q')
     if page and page != 'search':
         workspace = WORKSPACES.get(page)
         if not workspace:
             abort(404)
+        categories = get_categories(workspace)
         counts, subcounts = get_counts(workspace)
         startups = get_startups(workspace, category, search)
     else:
@@ -322,9 +324,9 @@ def getmap(page=None, category=None):
     } for startup in startups]
     startups = json.dumps(startups)
     return render_template(
-        'map.html', page=page, subpage=None,
+        'map.html', page=page, subpage=category,
         counts=counts, subcounts=subcounts,
-        startups=startups, token=GOOGLE_TOKEN)
+        startups=startups, categories=categories, token=GOOGLE_TOKEN)
 
 
 @app.route('/search/')
