@@ -45,7 +45,7 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
     Get startups from Motherbase with activities, entity types, linkedin and twitter accounts
     """
     results = {}
-    cache_file = os.path.join(CACHE_DIR, f'_startups_{workspace or "all"}_{category or "all"}.json')
+    cache_file = os.path.join(CACHE_DIR, f'.startups_{workspace or "all"}_{category or "all"}.json')
     try:
         workspaces = ','.join([workspace] if workspace else WORKSPACES.values())
         if search:
@@ -195,7 +195,7 @@ def get_categories(workspace=None):
     Get categories of a workspace
     """
     results = {}
-    cache_file = os.path.join(CACHE_DIR, f'_categories_{workspace or "all"}.json')
+    cache_file = os.path.join(CACHE_DIR, f'.categories_{workspace or "all"}.json')
     try:
         workspaces = ','.join([workspace] if workspace else WORKSPACES.values())
         with requests.Session() as session:
@@ -231,7 +231,7 @@ def get_counts(workspace=None):
     """
     results = {}
     results['counts'], results['subcounts'] = counts, subcounts = {}, {}
-    cache_file = os.path.join(CACHE_DIR, f'_counts_{workspace or "all"}.json')
+    cache_file = os.path.join(CACHE_DIR, f'.counts_{workspace or "all"}.json')
     try:
         with requests.Session() as session:
             session.headers.update(HEADERS)
