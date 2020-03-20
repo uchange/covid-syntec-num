@@ -3,87 +3,23 @@
     <div class="alert alert-warning" role="alert">
         <h4 class="alert-heading">
             <i class="fas fa-exclamation-triangle"></i>
-            Site en maintenance
+            <span>Page en maintenance</span>
         </h4>
-        <p>
-            Une intervention technique (rechargement de données, mise à jour, résolution d'incident) est en cours,
-            cela ne devrait prendre que quelques minutes, merci de bien vouloir patienter...
+        <p class="mb-0">
+            Une intervention technique (rechargement de données, mise à jour, résolution d'incident) est en cours.
+        </p>
+        <p class="mb-0">
+            C'est pourquoi les données de cette page ne peuvent pas être affichées pour le moment.
+        </p>
+        <p class="mb-0">
+            Cela ne devrait prendre que quelques minutes, merci de bien vouloir patienter...
         </p>
     </div>
 {% else %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
         {% for startup in startups %}
             <div class="col mb-4">
-                <div id="startup-{{ startup.company_id }}" class="card border-warning rounded h-100">
-                    {% if startup.company__logo %}
-                    <div class="text-center pt-2">
-                        <img src="{{ url_for("static", filename="img/coeur.png") }}"
-                             data-src="{{ startup.company__logo }}" alt="{{ startup.company__name }}" height="100">
-                    </div>
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title text-center text-danger font-weight-bold">
-                            {{ startup.company__name }}
-                        </h5>
-                        <p class="card-text text-muted text-justify">
-                            <span class="small">
-                                {{ startup.company__startup__value_proposition_fr|truncate }}
-                            </span>
-                        </p>
-                        {% if startup.company__website_url %}
-                            <div class="text-center">
-                                <a class="btn btn-sm btn-danger" target="_blank" href="{{ startup.company__website_url }}"
-                                   data-toggle="tooltip" data-placement="top" title="{{ startup.company__website_url }}">
-                                    Voir le site
-                                </a>
-                            </div>
-                        {% endif %}
-                        <div class="text-center pt-3">
-                            {% for linkedin in startup.linkedin %}
-                                <a class="card-link" href="{{ linkedin.url }}" target="_blank">
-                                    <i class="fab fa-lg fa-linkedin"></i>
-                                </a>
-                            {% endfor %}
-                            {% for twitter in startup.twitter %}
-                                <a class="card-link" href="https://twitter.com/{{ twitter.username }}" target="_blank">
-                                    <i class="fab fa-lg fa-twitter"></i>
-                                </a>
-                            {% endfor %}
-                        </div>
-                        {% if startup.extra_data.offrecovid %}
-                            <div class="text-center pt-2">
-                                <span class="small font-weight-bold ">{{ startup.extra_data.offrecovid }}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="card-footer border-warning bg-white">
-                        <div class="text-center">
-                            <span class="small text-info font-weight-bold">
-                                Localisation : {{ startup.company__startup__city|default("Inconnue", boolean=True) }}
-                                {% if startup.company__nb_employees %}
-                                    &bull;
-                                    Employés : {{ startup.company__nb_employees }}
-                                {% endif %}
-                                {% if startup.company__startup__creation_date__year %}
-                                    &bull;
-                                    Création : {{ startup.company__startup__creation_date__year }}
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="text-center">
-                            {% for entity in startup.entity %}
-                                <span class="badge text-white" style="background-color: {{ entity.entity__color }}">
-                                    {{ entity.entity__name_en }}
-                                </span>
-                            {% endfor %}
-                            {% for activity in startup.activity %}
-                                <span class="badge text-white" style="background-color: {{ activity.activity__color }}">
-                                    {{ activity.activity__name_en }}
-                                </span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+                {% include "_startup.html" %}
             </div>
         {% endfor %}
     </div>

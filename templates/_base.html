@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="container-fluid h-100">
+<html lang="fr" class="h-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -30,12 +30,12 @@
     <title>Les solutions numériques pour répondre à la crise Covid-19</title>
     <link rel="stylesheet" href="{{ url_for("static", filename="css/bootstrap.min.css") }}">
 </head>
-<body class="d-flex flex-column h-100">
+<body class="container-fluid d-flex flex-column h-100">
     <header class="header">
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col text-center py-3">
                 <a href="{{ url_for(".about") }}">
-                    <img src="{{ url_for("static", filename="img/syntec.png") }}" height="100" alt="Syntec Numérique">
+                    <img src="{{ url_for("static", filename="img/logo.png") }}" height="100" alt="Syntec Numérique">
                 </a>
             </div>
         </div>
@@ -47,127 +47,11 @@
                 </div>
             </div>
         </div>
-        <nav class="row navbar navbar-expand-md navbar-dark bg-dark">
-            <button class="navbar-toggler collapsed" type="button"
-                    data-toggle="collapse" data-target="#navbar"
-                    aria-controls="navbar" aria-expanded="false" aria-label="">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand d-block d-md-none">
-                {% if page == 'about' %}
-                    <span class="font-weight-bold">À propos</span>
-                {% elif page == 'search' %}
-                    <span class="font-weight-bold">Recherche</span>
-                {% elif page == 'famille' %}
-                    <span class="font-weight-bold">Famille</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts.famille }}
-                    </span>
-                {% elif page == 'travail' %}
-                    <span class="font-weight-bold">Travail</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts.travail }}
-                    </span>
-                {% elif page == 'sante' %}
-                    <span class="font-weight-bold">Patients</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts.sante }}
-                    </span>
-                {% elif page == 'sante_pro' %}
-                    <span class="font-weight-bold">Professionnels de Santé</span>
-                    <span class="badge badge-light align-midd">
-                        {{ counts.sante_pro }}
-                    </span>
-                {% endif %}
-            </a>
-            <div class="navbar-collapse collapse text-center" id="navbar">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item{% if page == 'about' %} active{% endif %}">
-                        <a class="nav-link" href="{{ url_for('.about') }}">
-                            <span class="font-weight-bold">À propos</span>
-                        </a>
-                    </li>
-                    <li class="nav-item{% if page == 'search' %} active{% endif %}">
-                        <a class="nav-link" href="{{ url_for('.search') }}">
-                            <span class="font-weight-bold">Recherche</span>
-                        </a>
-                    </li>
-                    <li class="nav-item{% if page == 'famille' %} active{% endif %}">
-                        <a class="nav-link" href="{{ url_for('.famille') }}">
-                            <span class="font-weight-bold">Famille</span>
-                            <span class="badge badge-light align-top">
-                                {{ counts.famille|default(0) }}
-                            </span>
-                        </a>
-                    </li>
-                    <li class="nav-item{% if page == 'travail' %} active{% endif %}">
-                        <a class="nav-link" href="{{ url_for('.travail') }}">
-                            <span class="font-weight-bold">Travail</span>
-                            <span class="badge badge-light align-top">
-                                {{ counts.travail|default(0) }}
-                            </span>
-                        </a>
-                    </li>
-                    <li class="nav-item{% if page == 'sante' %} active{% endif %}">
-                        <a class="nav-link" href="{{ url_for('.sante') }}">
-                            <span class="font-weight-bold">Patients</span>
-                            <span class="badge badge-light align-top">
-                                {{ counts.sante|default(0) }}
-                            </span>
-                        </a>
-                    </li>
-                    <li class="nav-item{% if page == 'sante_pro' %} active{% endif %}">
-                        <a class="nav-link" href="{{ url_for('.sante_pro') }}">
-                            <span class="font-weight-bold">Professionnels de Santé</span>
-                            <span class="badge badge-light align-top">
-                                {{ counts.sante_pro|default(0) }}
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        {% if categories %}
-        <nav class="row navbar navbar-expand-md navbar-light bg-light">
-            <button class="navbar-toggler collapsed" type="button"
-                    data-toggle="collapse" data-target="#subnavbar"
-                    aria-controls="subnavbar" aria-expanded="false" aria-label="">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand d-block d-md-none">
-                {% for category in categories %}
-                    {% if subpage == category.key %}
-                        <span class="font-weight-bold">{{ category.value }}</span>
-                        <span class="badge badge-secondary align-top">
-                            {{ subcounts[subpage]|default(0) }}
-                        </span>
-                    {% endif %}
-                {% endfor %}
-                {% if not subpage %}
-                    <span class="font-weight-bold">Toutes</span>
-                {% endif %}
-            </a>
-            <div class="navbar-collapse collapse text-center" id="subnavbar">
-                <ul class="navbar-nav mx-auto">
-                    {% for category in categories %}
-                        <li class="nav-item{% if subpage == category.key %} active{% endif %}">
-                            <a class="nav-link" href="{{ url_for(page, category=category.key) }}">
-                                <span class="{% if subpage == category.key %}font-weight-bold{% endif %}">{{ category.value }}</span>
-                                <span class="badge badge-secondary align-top">
-                                    {{ subcounts[category.key]|default(0) }}
-                                </span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </nav>
-        {% endif %}
+        {% include "_menu.html" %}
+        {% include "_submenu.html" %}
     </header>
-    <main class="flex-shrink-0 p-3" role="main">
-        {% block content %}
-
-        {% endblock %}
+    <main class="d-flex flex-column py-3" role="main">
+        {% block content %}{% endblock %}
     </main>
     <footer class="footer mt-auto">
         <div class="row">
@@ -188,12 +72,13 @@
         </div>
     </footer>
 
-    <script src="{{ url_for("static", filename="js/jquery.slim.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/jquery.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/popper.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/bootstrap.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/fontawesome.min.js") }}"></script>
     <script>
         $(document).ready(function() {
+            $('#search').focus().select();
             $('[data-toggle="tooltip"]').tooltip();
             $('[data-toggle="popover"]').popover();
             $('img').each(function(i, e) {

@@ -1,0 +1,65 @@
+{% extends "_base.html" %}
+
+{% block content %}
+    <div id="map" style="height: calc(100vh - 200px)"></div>
+{% endblock %}
+
+{% block scripts %}
+    {% if token %}
+    <script async defer type="application/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key={{ token }}&callback=initMap"></script>
+    <script>
+        let map = null;
+        let data = {{ startups|safe }};
+        let infos = {};
+
+        function initMap() {
+            let canvas = document.getElementById('map');
+            map = new google.maps.Map(canvas, {
+                center: {lat: 0, lng: 0},
+                zoom: 2,
+                streetViewControl: false,
+                mapTypeControl: false,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                styles: [
+                    {"elementType":"geometry","stylers":[{"saturation":-30},{"lightness":30}]},
+                    {"featureType":"landscape.natural","stylers":[{"lightness":50},{"visibility":"on"}]},
+                    {"featureType":"poi","stylers":[{"visibility":"off"}]},
+                    {"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+                    {"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+                    {"featureType":"road.local","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+                    {"featureType":"transit","stylers":[{"visibility":"off"}]}
+                ]
+            });
+
+            let bounds = new google.maps.LatLngBounds();
+            $.each(data, function (i, e) {
+                if (!e.lat || !e.lng) return;
+                let position = new google.maps.LatLng(e.lat, e.lng);
+                let marker = new google.maps.Marker({
+                    position: position,
+                    title: e.name,
+                    map: map
+                });
+                marker.addListener('click', function() {
+                    $.each(infos, function (i, e) {
+                        e.close();
+                    });
+                    let info = infos[e.id];
+                    if (!info) {
+                        $.get('/info/' + e.id + '/', function (data) {
+                            info = new google.maps.InfoWindow({
+                                content: data,
+                            });
+                            infos[e.id] = info;
+                            info.open(map, marker);
+                        });
+                    } else info.open(map, marker);
+                });
+                bounds.extend(marker.position);
+                map.fitBounds(bounds);
+            });
+        }
+    </script>
+    {% endif %}
+{% endblock %}

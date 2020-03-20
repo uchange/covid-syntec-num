@@ -1,0 +1,37 @@
+
+{% if categories %}
+    <nav class="row navbar navbar-expand-md navbar-light bg-light">
+        <button class="navbar-toggler collapsed" type="button"
+                data-toggle="collapse" data-target="#subnavbar"
+                aria-controls="subnavbar" aria-expanded="false" aria-label="">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand d-block d-md-none">
+            {% for category in categories %}
+                {% if subpage == category.key %}
+                    <span class="font-weight-bold">{{ category.value }}</span>
+                    <span class="badge badge-secondary align-top">
+                        {{ subcounts[subpage]|default(0) }}
+                    </span>
+                {% endif %}
+            {% endfor %}
+            {% if not subpage %}
+                <span class="font-weight-bold">Toutes</span>
+            {% endif %}
+        </a>
+        <div class="navbar-collapse collapse text-center" id="subnavbar">
+            <ul class="navbar-nav mx-auto">
+                {% for category in categories %}
+                    <li class="nav-item{% if subpage == category.key %} active{% endif %}">
+                        <a class="nav-link" href="{{ url_for('.getpage', page=page, category=category.key) }}">
+                            <span class="{% if subpage == category.key %}font-weight-bold{% endif %}">{{ category.value }}</span>
+                            <span class="badge badge-secondary align-top">
+                                {{ subcounts[category.key]|default(0) }}
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+{% endif %}

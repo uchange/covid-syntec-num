@@ -4,7 +4,7 @@
     <div class="section jumbotron row">
         <div class="col-lg-auto text-center">
             <img class="img-fluid mb-3"
-                 src="{{ url_for("static", filename="img/coeur.png") }}"
+                 src="{{ url_for("static", filename="img/placeholder.png") }}"
                  style="max-height: 300px">
         </div>
         <div class="col-lg text-justify">
@@ -16,19 +16,23 @@
                 Les solutions sont réparties en quatre catégories :
                 <ul>
                     <li>
-                        Des solutions <a href="{{ url_for(".famille") }}">pour le grand public et les familles</a>,
+                        Des solutions
+                        <a href="{{ url_for(".getpage", page="famille") }}">pour le grand public et les familles</a>,
                         pour mieux gérer le quotidien.
                     </li>
                     <li>
-                        Des solutions <a href="{{ url_for(".travail") }}">pour les entreprises et les salariés</a>,
+                        Des solutions
+                        <a href="{{ url_for(".getpage", page="travail") }}">pour les entreprises et les salariés</a>,
                         pour mieux s’adapter à un contexte professionnel de crise.
                     </li>
                     <li>
-                        Des solutions <a href="{{ url_for(".sante") }}">médicales à destination des malades</a>,
+                        Des solutions
+                        <a href="{{ url_for(".getpage", page="sante") }}">médicales à destination des malades</a>,
                         ou de ceux qui craignent de l’être.
                     </li>
                     <li>
-                        Et des solutions à destination <a href="{{ url_for(".sante") }}">des professionnels de santé</a>.
+                        Et des solutions à destination
+                        <a href="{{ url_for(".getpage", page="sante-pro") }}">des professionnels de santé</a>.
                     </li>
                 </ul>
             </p>

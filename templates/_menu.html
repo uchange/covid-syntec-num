@@ -1,0 +1,94 @@
+
+<nav class="row navbar navbar-expand-md navbar-dark bg-dark">
+    <button class="navbar-toggler collapsed" type="button"
+            data-toggle="collapse" data-target="#navbar"
+            aria-controls="navbar" aria-expanded="false" aria-label="">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand d-block d-md-none">
+        {% if page == 'about' %}
+            <span class="font-weight-bold">À propos</span>
+        {% elif page == 'search' %}
+            <span class="font-weight-bold">Recherche</span>
+        {% elif page == 'famille' %}
+            <span class="font-weight-bold">Famille</span>
+            <span class="badge badge-light align-top">
+                {{ counts['famille'] }}
+            </span>
+        {% elif page == 'travail' %}
+            <span class="font-weight-bold">Travail</span>
+            <span class="badge badge-light align-top">
+                {{ counts['travail'] }}
+            </span>
+        {% elif page == 'sante' %}
+            <span class="font-weight-bold">Patients</span>
+            <span class="badge badge-light align-top">
+                {{ counts['sante'] }}
+            </span>
+        {% elif page == 'sante-pro' %}
+            <span class="font-weight-bold">Professionnels de Santé</span>
+            <span class="badge badge-light align-top">
+                {{ counts['sante-pro'] }}
+            </span>
+        {% elif page == 'securite' %}
+            <span class="font-weight-bold">Sécurité</span>
+            <span class="badge badge-light align-top">
+                {{ counts.sante_pro }}
+            </span>
+        {% endif %}
+    </a>
+    <div class="navbar-collapse collapse text-center" id="navbar">
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item{% if page == 'about' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.about') }}">
+                    <span class="font-weight-bold">À propos</span>
+                </a>
+            </li>
+            <li class="nav-item{% if page == 'search' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.search') }}">
+                    <span class="font-weight-bold">Recherche</span>
+                </a>
+            </li>
+            <li class="nav-item{% if page == 'famille' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.getpage', page="famille") }}">
+                    <span class="font-weight-bold">Famille</span>
+                    <span class="badge badge-light align-top">
+                        {{ counts['famille']|default(0) }}
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item{% if page == 'travail' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.getpage', page="travail") }}">
+                    <span class="font-weight-bold">Travail</span>
+                    <span class="badge badge-light align-top">
+                        {{ counts['travail']|default(0) }}
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item{% if page == 'sante' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.getpage', page="sante") }}">
+                    <span class="font-weight-bold">Patients</span>
+                    <span class="badge badge-light align-top">
+                        {{ counts['sante']|default(0) }}
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item{% if page == 'sante_pro' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.getpage', page="sante-pro") }}">
+                    <span class="font-weight-bold">Professionnels de Santé</span>
+                    <span class="badge badge-light align-top">
+                        {{ counts['sante-pro']|default(0) }}
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item{% if page == 'securite' %} active{% endif %}">
+                <a class="nav-link" href="{{ url_for('.getpage', page="securite") }}">
+                    <span class="font-weight-bold">Sécurité</span>
+                    <span class="badge badge-light align-top">
+                        {{ counts['securite']|default(0) }}
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
