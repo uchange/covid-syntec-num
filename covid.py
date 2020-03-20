@@ -355,6 +355,7 @@ def cache():
     if secret == CACHE_SECRET:
         for file in files:
             os.remove(os.path.join(CACHE_DIR, file))
+        files = []
     return render_template(
         'cache.html', page='cache', subpage=None,
         counts=counts, subcounts=subcounts, files=files)
