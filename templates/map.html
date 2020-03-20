@@ -39,6 +39,7 @@
                 let marker = new google.maps.Marker({
                     position: position,
                     title: e.name,
+                    icon: '{{ url_for("static", filename="img/marker.png") }}',
                     map: map
                 });
                 marker.addListener('click', function() {

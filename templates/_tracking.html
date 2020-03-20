@@ -1,11 +1,11 @@
 
-<div id="legal-notice" class="fixed-bottom alert-warning p-2" style="display: none">
+<div id="legal-notice" class="fixed-bottom text-white bg-secondary p-2" style="display: none">
     <div class="row">
         <div class="col-auto text-justify">
             Ce site internet utilise des cookies afin d'améliorer la qualité de la navigation et des contenus
-            de <a href="https://covidsyntecnumerique.fr">covidsyntecnumerique.fr</a> en mesurant le trafic
-            sur le site et en évaluant l'attrait de nos contenus.
-            Cliquez <a href="{{ url_for(".legal") }}">ici</a> pour en savoir plus.
+            de <a class="text-white" href="https://covidsyntecnumerique.fr">covidsyntecnumerique.fr</a>
+            en mesurant le trafic sur le site et en évaluant l'attrait de nos contenus.
+            Cliquez <a class="text-white" href="{{ url_for(".legal") }}">ici</a> pour en savoir plus.
         </div>
         <div class="col text-center">
             <button class="btn btn-sm btn-success" onclick="accept(this);">Accepter</button>
@@ -18,7 +18,6 @@
 <script>
     let _paq = window._paq || [];
     _paq.push(['requireConsent']);
-    _paq.push(['rememberConsentGiven']);
     _paq.push(['alwaysUseSendBeacon']);
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
@@ -30,10 +29,12 @@
         g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
     })();
     function accept() {
+        _paq.push(['rememberConsentGiven']);
         _paq.push(['setConsentGiven']);
         $('#legal-notice').hide();
     }
     function deny() {
+        _paq.push(['rememberConsentGiven']);
         _paq.push(['forgetConsentGiven']);
         $('#legal-notice').hide();
     }
