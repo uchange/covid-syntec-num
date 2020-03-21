@@ -11,7 +11,7 @@ from flask_sitemap import Sitemap
 # Base configuration
 with open(os.environ.get('CONFIG'), 'r') as file:
     config = json.load(file)
-cache_dir, cache_secret = config.get('cache_dir'), config.get('cache_secret')
+cache_dir, cache_key = config.get('cache_dir'), config.get('cache_key')
 base_url = config.get('base_url')
 media_url = config.get('media_url') or base_url
 api_token, google_token = config.get('api_token'), config.get('google_token')
@@ -355,7 +355,7 @@ def cache():
     counts, subcounts = get_counts()
     secret = request.args.get('clear')
     files = sorted(os.listdir(cache_dir))
-    if secret == cache_secret:
+    if secret == cache_key:
         for file in files:
             os.remove(os.path.join(cache_dir, file))
         files = []
