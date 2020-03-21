@@ -4,41 +4,35 @@ import os
 import requests
 from urllib.parse import quote_plus
 
-from flask import Flask, abort, render_template, request, url_for
+from flask import Flask, abort, render_template, request
 from flask_caching import Cache
 from flask_sitemap import Sitemap
 
+# Base configuration
+with open(os.environ.get('CONFIG'), 'r') as file:
+    config = json.load(file)
+cache_dir, cache_secret = config.get('cache_dir'), config.get('cache_secret')
+base_url = config.get('base_url')
+media_url = config.get('media_url') or base_url
+api_token, google_token = config.get('api_token'), config.get('google_token')
+headers = {'Authorization': f'TOKEN {api_token}'}
+extra_field, category_field = config.get('extra_field'), config.get('category_field')
 
-URL = os.environ.get('URL')
-TOKEN = os.environ.get('TOKEN')
-GOOGLE_TOKEN = os.environ.get('GOOGLE_TOKEN')
-HEADERS = {'Authorization': f'Token {TOKEN}'}
-WORKSPACES = {
-    'famille': os.environ.get('WS_FAMILLE'),
-    'travail': os.environ.get('WS_TRAVAIL'),
-    'sante': os.environ.get('WS_SANTE'),
-    'sante-pro': os.environ.get('WS_SANTE_PRO'),
-    'securite': os.environ.get('WS_SECURITE'),
-}
+# Workspace configuration
+workspaces = config.get('workspaces')
+workspaces_by_page = {w['page']: w['id'] for w in workspaces}
+all_workspaces = ','.join(str(w['id']) for w in workspaces)
 
-CACHE_TYPE = os.environ.get('CACHE_TYPE', 'filesystem')
-CACHE_DIR = os.environ.get('CACHE_DIR', './cache/')
-CACHE_TIMEOUT = int(os.environ.get('CACHE_TIMEOUT', 900))
-CACHE_SECRET = os.environ.get('CACHE_SECRET')
-config = {
-    'CACHE_TYPE': CACHE_TYPE,
-    'CACHE_DIR': CACHE_DIR,
-    'CACHE_DEFAULT_TIMEOUT': CACHE_TIMEOUT,
-    'SITEMAP_URL_SCHEME': 'https',
-}
+# Flask configuration
 app = application = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY')
-app.config.from_mapping(config)
+app.secret_key = config.get('secret_key')
+app.config.from_mapping(config.get('flask_config', {}))
 cache, sitemap = Cache(app), Sitemap(app)
 
+# Logging configuration
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(os.environ.get('LOGLEVEL', 'INFO'))
+logger.setLevel(config.get('log_level') or 'INFO')
 
 
 def get_startups(workspace=None, category=None, search=None, startup_id=None):
@@ -46,9 +40,8 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
     Get startups from Motherbase with activities, entity types, linkedin and twitter accounts
     """
     results = {}
-    cache_file = os.path.join(CACHE_DIR, f'.startups_{workspace or "all"}_{category or "all"}.json')
+    cache_file = os.path.join(cache_dir, f'.startups_{workspace or "all"}_{category or "all"}.json')
     try:
-        workspaces = ','.join([workspace] if workspace else WORKSPACES.values())
         if search:
             terms = quote_plus(search)
             search = dict(
@@ -56,7 +49,7 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                 filters=(
                     f'or(company__name__unaccent__icontains:{terms},'
                     f'company__startup__value_proposition_fr__unaccent__icontains:{terms},'
-                    f'extra_data__offrecovid__icontains:{terms})'
+                    f'extra_data__{extra_field}__icontains:{terms})'
                 ))
         elif startup_id:
             search = dict(
@@ -64,7 +57,7 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                 company_id=startup_id,
             )
         with requests.Session() as session:
-            session.headers.update(HEADERS)
+            session.headers.update(headers)
             # Startups
             params = dict(
                 fields=','.join((
@@ -83,19 +76,19 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                 company__startup__isnull=0,
                 order_by='company__name',
                 all=1,
-                workspace_id__in=workspaces,
+                workspace_id__in=workspace or all_workspaces,
             )
             if category:
-                params.update(extra_data__category=category)
+                params.update({f'extra_data__{category_field}': category})
             if search:
                 params.update(search)
-            response = session.get(URL + '/api/front/link/', params=params)
+            response = session.get(f'{base_url}/api/front/link/', params=params)
             logger.debug(f"[{response.elapsed}] {response.url}")
             for result in response.json():
                 results[result['company_id']] = result
                 if not result['company__logo']:
                     continue
-                result['company__logo'] = "/".join([URL, 'media', result['company__logo']])
+                result['company__logo'] = "/".join([media_url, 'media', result['company__logo']])
             startup_ids = ','.join(map(str, results.keys()))
             # Activities and entity types
             if results:
@@ -113,12 +106,12 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                         all=1,
                     )
                     if category:
-                        params.update(startup__links__extra_data__category=category)
+                        params.update({f'startup__links__extra_data__{category_field}': category})
                     if search and startup_ids:
                         params.update(startup_id__in=startup_ids)
                     else:
-                        params.update(startup__links__workspace_id__in=workspaces)
-                    response = session.get(URL + f'/api/startup{type}/', params=params)
+                        params.update(startup__links__workspace_id__in=workspace or all_workspaces)
+                    response = session.get(f'{base_url}/api/startup{type}/', params=params)
                     logger.debug(f"[{response.elapsed}] {response.url}")
                     for result in response.json():
                         startup = results.get(result['startup_id'])
@@ -138,12 +131,12 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                     all=1,
                 )
                 if category:
-                    params.update(company__links__extra_data__category=category)
+                    params.update({f'company__links__extra_data__{category_field}': category})
                 if search and startup_ids:
                     params.update(company_id__in=startup_ids)
                 else:
-                    params.update(company__links__workspace_id__in=workspaces)
-                response = session.get(URL + '/api/linkedin/', params=params)
+                    params.update(company__links__workspace_id__in=workspace or all_workspaces)
+                response = session.get(f'{base_url}/api/linkedin/', params=params)
                 logger.debug(f"[{response.elapsed}] {response.url}")
                 for result in response.json():
                     startup = results.get(result['company_id'])
@@ -164,12 +157,12 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                     all=1,
                 )
                 if category:
-                    params.update(company__links__extra_data__category=category)
+                    params.update({f'company__links__extra_data__{category_field}': category})
                 if search and startup_ids:
                     params.update(company_id__in=startup_ids)
                 else:
-                    params.update(company__links__workspace_id__in=workspaces)
-                response = session.get(URL + '/api/twitter/', params=params)
+                    params.update(company__links__workspace_id__in=workspace or all_workspaces)
+                response = session.get(f'{base_url}/api/twitter/', params=params)
                 logger.debug(f"[{response.elapsed}] {response.url}")
                 for result in response.json():
                     startup = results.get(result['company_id'])
@@ -196,14 +189,13 @@ def get_categories(workspace=None):
     Get categories of a workspace
     """
     results = {}
-    cache_file = os.path.join(CACHE_DIR, f'.categories_{workspace or "all"}.json')
+    cache_file = os.path.join(cache_dir, f'.categories_{workspace or "all"}.json')
     try:
-        workspaces = ','.join([workspace] if workspace else WORKSPACES.values())
         with requests.Session() as session:
-            session.headers.update(HEADERS)
-            response = session.get(URL + '/api/front/attribute/', params=dict(
-                name='category',
-                workspace_id__in=workspaces,
+            session.headers.update(headers)
+            response = session.get(f'{base_url}/api/front/attribute/', params=dict(
+                name=category_field,
+                workspace_id__in=workspace or all_workspaces,
                 all=1,
             ))
             logger.debug(f"[{response.elapsed}] {response.url}")
@@ -213,7 +205,7 @@ def get_categories(workspace=None):
                 if workspace:
                     results = categories
                     break
-                results[str(result['workspace_id'])] = categories
+                results[result['workspace_id']] = categories
         # Save results in cache
         with open(cache_file, 'w') as file:
             json.dump(results, file)
@@ -232,35 +224,33 @@ def get_counts(workspace=None):
     """
     results = {}
     results['counts'], results['subcounts'] = counts, subcounts = {}, {}
-    cache_file = os.path.join(CACHE_DIR, f'.counts_{workspace or "all"}.json')
+    cache_file = os.path.join(cache_dir, f'.counts_{workspace or "all"}.json')
     try:
         with requests.Session() as session:
-            session.headers.update(HEADERS)
+            session.headers.update(headers)
             # Counts by workspace
-            response = session.get(URL + '/api/front/link', params=dict(
-                workspace__in=','.join(WORKSPACES.values()),
+            response = session.get(f'{base_url}/api/front/link', params=dict(
+                workspace__in=all_workspaces,
                 company__startup__isnull=False,
                 group_by='workspace_id',
                 count='id',
                 all=1,
             ))
             logger.debug(f"[{response.elapsed}] {response.url}")
-            pages = {wid: page for page, wid in WORKSPACES.items()}
             for result in response.json():
-                page = pages.get(str(result['workspace_id']))
-                counts[page] = result['id_count']
+                counts[result['workspace_id']] = result['id_count']
             # Counts by category in workspace
             if workspace:
-                response = session.get(URL + '/api/front/link', params=dict(
+                response = session.get(f'{base_url}/api/front/link', params=dict(
                     workspace=workspace,
                     company__startup__isnull=False,
-                    group_by='extra_data__category',
+                    group_by=f'extra_data__{category_field}',
                     count='id',
                     all=1,
                 ))
                 logger.debug(f"[{response.elapsed}] {response.url}")
                 for result in response.json():
-                    subpage = result['extra_data__category']
+                    subpage = result[f'extra_data__{category_field}']
                     subcounts[subpage] = result['id_count']
         # Save results in cache
         with open(cache_file, 'w') as file:
@@ -280,7 +270,7 @@ def about():
     counts, subcounts = get_counts()
     return render_template(
         'about.html', page='about', subpage=None,
-        counts=counts, subcounts=subcounts)
+        workspaces=workspaces, counts=counts, subcounts=subcounts)
 
 
 @app.route('/legal/')
@@ -289,14 +279,14 @@ def legal():
     counts, subcounts = get_counts()
     return render_template(
         'legal.html', page='legal', subpage=None,
-        counts=counts, subcounts=subcounts)
+        workspaces=workspaces, counts=counts, subcounts=subcounts)
 
 
 @app.route('/page/<page>/')
 @app.route('/page/<page>/<category>/')
 @cache.cached(query_string=True)
 def getpage(page=None, category=None):
-    workspace = WORKSPACES.get(page)
+    workspace = workspaces_by_page.get(page)
     if not workspace:
         abort(404)
     search = request.args.get('q')
@@ -305,8 +295,8 @@ def getpage(page=None, category=None):
     counts, subcounts = get_counts(workspace)
     return render_template(
         'main.html', page=page, subpage=category,
-        counts=counts, subcounts=subcounts,
-        startups=startups, categories=categories)
+        workspaces=workspaces, counts=counts, subcounts=subcounts,
+        startups=startups, categories=categories, extra_field=extra_field)
 
 
 @app.route('/map/')
@@ -317,7 +307,7 @@ def getmap(page=None, category=None):
     categories = []
     search = request.args.get('q')
     if page and page != 'search':
-        workspace = WORKSPACES.get(page)
+        workspace = workspaces_by_page.get(page)
         if not workspace:
             abort(404)
         categories = get_categories(workspace)
@@ -335,8 +325,8 @@ def getmap(page=None, category=None):
     startups = json.dumps(startups)
     return render_template(
         'map.html', page=page, subpage=category,
-        counts=counts, subcounts=subcounts,
-        startups=startups, categories=categories, token=GOOGLE_TOKEN)
+        workspaces=workspaces, counts=counts, subcounts=subcounts,
+        startups=startups, categories=categories, token=google_token)
 
 
 @app.route('/search/')
@@ -346,7 +336,8 @@ def search():
     startups = get_startups(search=search) if search else {}
     return render_template(
         'search.html', page='search', subpage=None, search=True,
-        counts=counts, subcounts=subcounts, startups=startups)
+        workspaces=workspaces, counts=counts, subcounts=subcounts,
+        startups=startups, extra_field=extra_field)
 
 
 @app.route('/info/<startup_id>/')
@@ -356,21 +347,21 @@ def info(startup_id):
         return abort(404)
     return render_template(
         'startup.html', page='info', subpage=None,
-        startup=startup, popup=True)
+        startup=startup, extra_field=extra_field, popup=True)
 
 
 @app.route('/cache/')
 def cache():
     counts, subcounts = get_counts()
     secret = request.args.get('clear')
-    files = sorted(os.listdir(CACHE_DIR))
-    if secret == CACHE_SECRET:
+    files = sorted(os.listdir(cache_dir))
+    if secret == cache_secret:
         for file in files:
-            os.remove(os.path.join(CACHE_DIR, file))
+            os.remove(os.path.join(cache_dir, file))
         files = []
     return render_template(
-        'cache.html', page='cache', subpage=None,
-        counts=counts, subcounts=subcounts, files=files)
+        'cache.html', page='cache', subpage=None, files=files,
+        workspaces=workspaces, counts=counts, subcounts=subcounts)
 
 
 @sitemap.register_generator
@@ -378,7 +369,7 @@ def sitemap():
     yield 'about', {}
     yield 'search', {}
     categories = get_categories()
-    for page, workspace in WORKSPACES.items():
+    for page, workspace in workspaces_by_page.items():
         yield 'getpage', dict(page=page)
         yield 'getmap', dict(page=page)
         for category in categories.get(workspace, []):

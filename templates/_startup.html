@@ -40,9 +40,9 @@
                 </a>
             {% endfor %}
         </div>
-        {% if startup.extra_data.offrecovid %}
+        {% if startup.extra_data[extra_field] %}
             <div class="text-center pt-2">
-                <span class="small font-weight-bold ">{{ startup.extra_data.offrecovid }}</span>
+                <span class="small font-weight-bold ">{{ startup.extra_data[extra_field] }}</span>
             </div>
         {% endif %}
     </div>

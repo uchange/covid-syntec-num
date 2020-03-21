@@ -1,0 +1,45 @@
+{
+  "base_url": "",
+  "media_url": "",
+  "api_token": "",
+  "google_token": "",
+  "secret_key": "",
+  "cache_dir": "./cache/",
+  "cache_key": "",
+  "extra_field": "offrecovid",
+  "category_field": "category",
+  "log_level": "INFO",
+  "flask_config": {
+    "CACHE_TYPE": "filesystem",
+    "CACHE_DIR": "./cache/",
+    "CACHE_DEFAULT_TIMEOUT": 900,
+    "SITEMAP_URL_SCHEME": "https"
+  },
+  "workspaces": [
+    {
+      "id": 107,
+      "name": "Travail",
+      "page": "travail"
+    },
+    {
+      "id": 108,
+      "name": "Famille",
+      "page": "famille"
+    },
+    {
+      "id": 110,
+      "name": "Patients",
+      "page": "sante"
+    },
+    {
+      "id": 109,
+      "name": "Professionnels de santé",
+      "page": "sante-pro"
+    },
+    {
+      "id": 113,
+      "name": "Sécurité",
+      "page": "securite"
+    }
+  ]
+}

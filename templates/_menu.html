@@ -10,31 +10,15 @@
             <span class="font-weight-bold">À propos</span>
         {% elif page == 'search' %}
             <span class="font-weight-bold">Recherche</span>
-        {% elif page == 'famille' %}
-            <span class="font-weight-bold">Famille</span>
-            <span class="badge badge-light align-top">
-                {{ counts['famille'] }}
-            </span>
-        {% elif page == 'travail' %}
-            <span class="font-weight-bold">Travail</span>
-            <span class="badge badge-light align-top">
-                {{ counts['travail'] }}
-            </span>
-        {% elif page == 'sante' %}
-            <span class="font-weight-bold">Patients</span>
-            <span class="badge badge-light align-top">
-                {{ counts['sante'] }}
-            </span>
-        {% elif page == 'sante-pro' %}
-            <span class="font-weight-bold">Professionnels de Santé</span>
-            <span class="badge badge-light align-top">
-                {{ counts['sante-pro'] }}
-            </span>
-        {% elif page == 'securite' %}
-            <span class="font-weight-bold">Sécurité</span>
-            <span class="badge badge-light align-top">
-                {{ counts.sante_pro }}
-            </span>
+        {% else %}
+            {% for workspace in workspaces %}
+                {% if workspace.page == page %}
+                    <span class="font-weight-bold">{{ workspace.name }}</span>
+                    <span class="badge badge-light align-top">
+                        {{ counts[workspace.id]|default(0) }}
+                    </span>
+                {% endif %}
+            {% endfor %}
         {% endif %}
     </a>
     <div class="navbar-collapse collapse text-center" id="navbar">
@@ -49,46 +33,16 @@
                     <span class="font-weight-bold">Recherche</span>
                 </a>
             </li>
-            <li class="nav-item{% if page == 'famille' %} active{% endif %}">
-                <a class="nav-link" href="{{ url_for('.getpage', page="famille") }}">
-                    <span class="font-weight-bold">Famille</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts['famille']|default(0) }}
-                    </span>
-                </a>
-            </li>
-            <li class="nav-item{% if page == 'travail' %} active{% endif %}">
-                <a class="nav-link" href="{{ url_for('.getpage', page="travail") }}">
-                    <span class="font-weight-bold">Travail</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts['travail']|default(0) }}
-                    </span>
-                </a>
-            </li>
-            <li class="nav-item{% if page == 'sante' %} active{% endif %}">
-                <a class="nav-link" href="{{ url_for('.getpage', page="sante") }}">
-                    <span class="font-weight-bold">Patients</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts['sante']|default(0) }}
-                    </span>
-                </a>
-            </li>
-            <li class="nav-item{% if page == 'sante-pro' %} active{% endif %}">
-                <a class="nav-link" href="{{ url_for('.getpage', page="sante-pro") }}">
-                    <span class="font-weight-bold">Professionnels de Santé</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts['sante-pro']|default(0) }}
-                    </span>
-                </a>
-            </li>
-            <li class="nav-item{% if page == 'securite' %} active{% endif %}">
-                <a class="nav-link" href="{{ url_for('.getpage', page="securite") }}">
-                    <span class="font-weight-bold">Sécurité</span>
-                    <span class="badge badge-light align-top">
-                        {{ counts['securite']|default(0) }}
-                    </span>
-                </a>
-            </li>
+            {% for workspace in workspaces %}
+                <li class="nav-item{% if workspace.page == page %} active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('.getpage', page=workspace.page) }}">
+                        <span class="font-weight-bold">{{ workspace.name }}</span>
+                        <span class="badge badge-light align-top">
+                            {{ counts[workspace.id]|default(0) }}
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 </nav>
