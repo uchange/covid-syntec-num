@@ -5,11 +5,8 @@ import requests
 from urllib.parse import quote_plus
 
 from flask import Flask, abort, render_template, request
-from flask_blogging import SQLAStorage, BloggingEngine
 from flask_caching import Cache
-from flask_login import login_user, logout_user
 from flask_sitemap import Sitemap
-from sqlalchemy import create_engine, MetaData
 
 
 # Base configuration
@@ -21,7 +18,6 @@ media_url = config.get('media_url') or base_url
 api_token, google_token = config.get('api_token'), config.get('google_token')
 headers = {'Authorization': f'TOKEN {api_token}'}
 extra_field, category_field = config.get('extra_field'), config.get('category_field')
-database_url = config.get('database_url')
 
 # Workspace configuration
 workspaces = config.get('workspaces')
