@@ -1,18 +1,11 @@
 
-<div id="legal-notice" class="fixed-bottom text-white bg-secondary p-2" style="display: none">
-    <div class="row">
-        <div class="col-auto text-justify">
-            <i class="fas fa-info-circle"></i>
-            Ce site internet utilise des cookies afin d’améliorer la qualité de la navigation,
-            d’évaluer et d’améliorer les contenus et de mesurer le trafic du site
-            <a class="text-white" href="https://covidsyntecnumerique.fr">covidsyntecnumerique.fr</a>.
-            <a class="text-white" href="{{ url_for(".legal") }}">Cliquez ici pour en savoir plus.</a>
-        </div>
-        <div class="col text-center">
-            <button class="btn btn-sm btn-success" onclick="accept(this);">Accepter</button>
-            <button class="btn btn-sm btn-danger" onclick="deny(this)">Refuser</button>
-        </div>
-    </div>
+<div id="legal-notice" class="fixed-bottom text-justify text-white bg-secondary p-2" style="display: none">
+    <i class="fas fa-info-circle"></i>
+    Ce site internet utilise des cookies afin d’améliorer la qualité de la navigation,
+    d’évaluer et d’améliorer les contenus et de mesurer le trafic du site
+    <a class="text-white" href="https://covidsyntecnumerique.fr">covidsyntecnumerique.fr</a>.
+    <a class="text-white" href="{{ url_for(".legal") }}">Cliquez ici pour en savoir plus.</a>
+    <button class="btn btn-sm btn-light float-right" onclick="accept(this);">J'ai compris</button>
 </div>
 
 <!-- Matomo -->
@@ -30,9 +23,13 @@
         g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
         // Legal notice
         _paq.push([function() {
-            if (document.cookie.match(/mtm_consent/))
+            if (document.cookie.match(/mtm_consent/)) {
                 $('#legal-notice').remove();
-            else $('#legal-notice').show();
+            } else {
+                _paq.push(['rememberConsentGiven', 8760]);
+                _paq.push(['setConsentGiven']);
+                $('#legal-notice').show();
+            }
         }])
     })();
     function accept() {
