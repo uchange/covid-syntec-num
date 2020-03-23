@@ -6,7 +6,7 @@
             Ce site internet utilise des cookies afin d'améliorer la qualité de la navigation et des contenus
             de <a class="text-white" href="https://covidsyntecnumerique.fr">covidsyntecnumerique.fr</a>
             en mesurant le trafic sur le site et en évaluant l'attrait de nos contenus.
-            Cliquez <a class="text-white" href="{{ url_for(".legal") }}">ici</a> pour en savoir plus.
+            <a class="text-white" href="{{ url_for(".legal") }}">Cliquez ici pour en savoir plus.</a>
         </div>
         <div class="col text-center">
             <button class="btn btn-sm btn-success" onclick="accept(this);">Accepter</button>
@@ -18,7 +18,7 @@
 <!-- Matomo -->
 <script>
     let _paq = window._paq || [];
-    // _paq.push(['requireConsent']);
+    _paq.push(['requireConsent']);
     _paq.push(['alwaysUseSendBeacon']);
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
@@ -29,13 +29,11 @@
         let d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
         g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
         // Legal notice
-        /*
         _paq.push([function() {
             if (document.cookie.match(/mtm_consent/))
                 $('#legal-notice').remove();
             else $('#legal-notice').show();
         }])
-        */
     })();
     function accept() {
         _paq.push(['rememberConsentGiven', 8760]);
