@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import requests
-from urllib.parse import quote_plus
 
 from flask import Flask, abort, render_template, request
 from flask_caching import Cache
@@ -17,7 +16,7 @@ base_url = config.get('base_url')
 media_url = config.get('media_url') or base_url
 api_token, google_token = config.get('api_token'), config.get('google_token')
 headers = {'Authorization': f'TOKEN {api_token}'}
-extra_field, category_field = config.get('extra_field'), config.get('category_field')
+category_field, desc_field, link_field = config.get('category_field'), config.get('desc_field'), config.get('link_field')
 
 # Workspace configuration
 workspaces = config.get('workspaces')
@@ -44,13 +43,12 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
     cache_file = os.path.join(cache_dir, f'.startups_{workspace or "all"}_{category or "all"}.json')
     try:
         if search:
-            terms = quote_plus(search)
             search = dict(
                 distinct='company__name',
                 filters=(
-                    f'or(company__name__unaccent__icontains:{terms},'
-                    f'company__startup__value_proposition_fr__unaccent__icontains:{terms},'
-                    f'extra_data__{extra_field}__icontains:{terms})'
+                    f'or(company__name__unaccent__icontains:"{search}",'
+                    f'company__startup__value_proposition_fr__unaccent__icontains:"{search}",'
+                    f'extra_data__{desc_field}__icontains:"{search}")'
                 ))
         elif startup_id:
             search = dict(
@@ -297,7 +295,8 @@ def getpage(page=None, category=None):
     return render_template(
         'main.html', page=page, subpage=category,
         workspaces=workspaces, counts=counts, subcounts=subcounts,
-        startups=startups, categories=categories, extra_field=extra_field)
+        startups=startups, categories=categories,
+        desc_field=desc_field, link_field=link_field)
 
 
 @app.route('/map/')
@@ -338,7 +337,7 @@ def search():
     return render_template(
         'search.html', page='search', subpage=None, search=True,
         workspaces=workspaces, counts=counts, subcounts=subcounts,
-        startups=startups, extra_field=extra_field)
+        startups=startups, desc_field=desc_field, link_field=link_field)
 
 
 @app.route('/info/<startup_id>/')
@@ -347,8 +346,8 @@ def info(startup_id):
     if not startup:
         return abort(404)
     return render_template(
-        'startup.html', page='info', subpage=None,
-        startup=startup, extra_field=extra_field, popup=True)
+        'startup.html', page='info', subpage=None, popup=True,
+        startup=startup, desc_field=desc_field, link_field=link_field)
 
 
 @app.route('/cache/')

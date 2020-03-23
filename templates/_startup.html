@@ -20,14 +20,25 @@
                 {{ startup.company__startup__value_proposition_fr|truncate }}
             </span>
         </p>
-        {% if startup.company__website_url %}
+        {% if startup.extra_data[desc_field] %}
             <div class="text-center">
+                <span class="small font-weight-bold ">{{ startup.extra_data[desc_field] }}</span>
+            </div>
+        {% endif %}
+        <div class="text-center pt-3">
+            {% if startup.company__website_url %}
                 <a class="btn btn-sm btn-danger" target="_blank" href="{{ startup.company__website_url }}"
                    data-toggle="tooltip" data-placement="top" title="{{ startup.company__website_url }}">
                     Voir le site
                 </a>
-            </div>
-        {% endif %}
+            {% endif %}
+            {% if startup.extra_data[link_field] %}
+                <a class="btn btn-sm btn-success" target="_blank" href="{{ startup.extra_data[link_field] }}"
+                   data-toggle="tooltip" data-placement="top" title="{{ startup.extra_data[link_field] }}">
+                    Voir l'offre
+                </a>
+            {% endif %}
+        </div>
         <div class="text-center pt-3">
             {% for linkedin in startup.linkedin %}
                 <a class="card-link" href="{{ linkedin.url }}" target="_blank">
@@ -40,11 +51,6 @@
                 </a>
             {% endfor %}
         </div>
-        {% if startup.extra_data[extra_field] %}
-            <div class="text-center pt-2">
-                <span class="small font-weight-bold ">{{ startup.extra_data[extra_field] }}</span>
-            </div>
-        {% endif %}
     </div>
     <div class="card-footer border-warning bg-white">
         <div class="text-center">

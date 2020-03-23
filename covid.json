@@ -6,8 +6,9 @@
   "secret_key": "",
   "cache_dir": "./cache/",
   "cache_key": "",
-  "extra_field": "offrecovid",
   "category_field": "category",
+  "desc_field": "offrecovid",
+  "link_field": "lien",
   "log_level": "INFO",
   "flask_config": {
     "CACHE_TYPE": "filesystem",
