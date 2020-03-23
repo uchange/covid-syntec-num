@@ -18,13 +18,13 @@
   "workspaces": [
     {
       "id": 107,
-      "name": "Travail",
-      "page": "travail"
+      "name": "Famille",
+      "page": "famille"
     },
     {
       "id": 108,
-      "name": "Famille",
-      "page": "famille"
+      "name": "Travail",
+      "page": "travail"
     },
     {
       "id": 110,
