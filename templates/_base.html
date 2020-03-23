@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Syntec Numérique & U Change">
-    <meta name="description" content="Les solutions numériques pour répondre à la crise Covid-19">
+    <meta name="description" content="
+        Les solutions numériques pour répondre à la crise Covid-19
+        {% for workspace in workspaces %}{% if workspace.page == page %}- {{ workspace.desc }}{% endif %}{% endfor %}
+        {% for category in categories %}{% if subpage == category.key %}({{ category.value }}){% endif %}{% endfor %}">
     <meta name=“keywords” content="Covid-19, Coronavirus, Syntec Numérique, U Change">
     <meta property="og:url" content="{{ request.host_url }}">
     <meta property="og:title" content="Les solutions numériques pour répondre à la crise Covid-19">
-    <meta property="og:description" content="Les acteurs du numérique présents sur le territoire français qui apportent des solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19">
+    <meta property="og:description" content="
+        Les acteurs du numérique présents sur le territoire français qui apportent des solutions concrètes et opérationnelles pour mieux gérer la situation de crise entraînée par le Covid-19.
+        {% for workspace in workspaces %}{% if workspace.page == page %}- {{ workspace.desc }}{% endif %}{% endfor %}
+        {% for category in categories %}{% if subpage == category.key %}({{ category.value }}){% endif %}{% endfor %}">
     <meta property="og:image" content="{{ url_for("static", filename="img/thumbnail.png") }}">
     <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for("static", filename="favicon/apple-icon-57x57.png") }}">
     <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for("static", filename="favicon/apple-icon-60x60.png") }}">
@@ -27,7 +33,11 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{{ url_for("static", filename="favicon/ms-icon-144x144.png") }}">
     <meta name="theme-color" content="#ffffff">
-    <title>Les solutions numériques pour répondre à la crise Covid-19</title>
+    <title>
+        Les solutions numériques pour répondre à la crise Covid-19
+        {% for workspace in workspaces %}{% if workspace.page == page %}- {{ workspace.desc }}{% endif %}{% endfor %}
+        {% for category in categories %}{% if subpage == category.key %}({{ category.value }}){% endif %}{% endfor %}
+    </title>
     <link rel="stylesheet" href="{{ url_for("static", filename="css/bootstrap.min.css") }}">
 </head>
 <body class="d-flex flex-column h-100">

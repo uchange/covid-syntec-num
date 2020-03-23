@@ -19,27 +19,32 @@
     {
       "id": 107,
       "name": "Famille",
-      "page": "famille"
+      "page": "famille",
+      "desc": "Solutions pour le grand public et les familles pour mieux gérer le quotidien"
     },
     {
       "id": 108,
       "name": "Travail",
-      "page": "travail"
+      "page": "travail",
+      "desc": "Solutions pour les entreprises et les salariés pour mieux s’adapter à un contexte professionnel de crise"
     },
     {
       "id": 110,
       "name": "Patients",
-      "page": "sante"
+      "page": "sante",
+      "desc": "Solutions médicales à destination des malades ou de ceux qui craignent de l’être"
     },
     {
       "id": 109,
       "name": "Professionnels de santé",
-      "page": "sante-pro"
+      "page": "sante-pro",
+      "desc": "Solutions à destination des professionnels de santé"
     },
     {
       "id": 113,
       "name": "Sécurité",
-      "page": "securite"
+      "page": "securite",
+      "desc": "Solutions et conseils de sécurité liés à l'usage du numérique en situation de crise"
     }
   ]
 }
