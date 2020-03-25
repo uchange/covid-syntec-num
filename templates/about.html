@@ -3,9 +3,11 @@
 {% block content %}
     <div class="section jumbotron row">
         <div class="col-lg-auto text-center">
-            <img class="img-fluid mb-3 d-none d-md-block"
+            <img class="img-fluid mb-3 d-none d-lg-block"
                  src="{{ url_for("static", filename="img/placeholder.png") }}"
                  style="max-height: 300px">
+            <img src="{{ url_for("static", filename="img/news.png") }}"
+                 class="d-none d-lg-inline" height="150" alt="Syntec Numérique">
         </div>
         <div class="col-lg text-justify">
             <p>
