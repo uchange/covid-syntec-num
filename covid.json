@@ -9,6 +9,8 @@
   "category_field": "category",
   "desc_field": "offrecovid",
   "link_field": "lien",
+  "priority_field": "priority",
+  "order_field": "order",
   "log_level": "INFO",
   "flask_config": {
     "CACHE_TYPE": "filesystem",

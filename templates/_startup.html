@@ -1,5 +1,6 @@
 
-<div id="startup-{{ startup.company_id }}" class="card border-warning rounded h-100">
+<div id="startup-{{ startup.company_id }}"
+     class="card border-warning rounded h-100{% if startup.extra_data[priority_field] %} alert-warning{% endif %}">
     {% if startup.company__logo %}
     <div class="text-center pt-2">
         {% if popup %}
@@ -52,7 +53,7 @@
             {% endfor %}
         </div>
     </div>
-    <div class="card-footer border-warning bg-white">
+    <div class="card-footer border-warning {% if startup.extra_data[priority_field] %} alert-warning{% endif %}"">
         <div class="text-center">
             <span class="small text-info font-weight-bold">
                 Localisation : {{ startup.company__startup__city|default("Inconnue", boolean=True) }}

@@ -16,7 +16,11 @@ base_url = config.get('base_url')
 media_url = config.get('media_url') or base_url
 api_token, google_token = config.get('api_token'), config.get('google_token')
 headers = {'Authorization': f'TOKEN {api_token}'}
-category_field, desc_field, link_field = config.get('category_field'), config.get('desc_field'), config.get('link_field')
+extra_fields = dict(
+    category_field=config.get('category_field'), desc_field=config.get('desc_field'),
+    link_field=config.get('link_field'), priority_field=config.get('priority_field'),
+    order_field=config.get('order_field'))
+category_field, desc_field, link_field, priority_field, order_field = extra_fields.values()
 
 # Workspace configuration
 workspaces = config.get('workspaces')
@@ -72,10 +76,12 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
                     'company__startup__lng',
                     'extra_data',
                 )),
-                company__startup__isnull=0,
-                order_by='company__name',
-                all=1,
                 workspace_id__in=workspace or all_workspaces,
+                company__startup__isnull=0,
+                order_by=','.join(
+                    ('company__name',) if search or not order_field else
+                    (f'extra_data__{order_field}', 'company__name')),
+                all=1,
             )
             if category:
                 params.update({f'extra_data__{category_field}': category})
@@ -180,7 +186,8 @@ def get_startups(workspace=None, category=None, search=None, startup_id=None):
         with open(cache_file, 'r') as file:
             results = json.load(file)
     # Return results
-    return next(iter(results.values()), None) if startup_id else list(results.values())
+    results = list(results.values())
+    return next(iter(results), None) if startup_id else results
 
 
 def get_categories(workspace=None):
@@ -295,8 +302,7 @@ def getpage(page=None, category=None):
     return render_template(
         'main.html', page=page, subpage=category,
         workspaces=workspaces, counts=counts, subcounts=subcounts,
-        startups=startups, categories=categories,
-        desc_field=desc_field, link_field=link_field)
+        startups=startups, categories=categories, **extra_fields)
 
 
 @app.route('/map/')
@@ -337,7 +343,7 @@ def search():
     return render_template(
         'search.html', page='search', subpage=None, search=True,
         workspaces=workspaces, counts=counts, subcounts=subcounts,
-        startups=startups, desc_field=desc_field, link_field=link_field)
+        startups=startups, **extra_fields)
 
 
 @app.route('/info/<startup_id>/')
@@ -347,7 +353,7 @@ def info(startup_id):
         return abort(404)
     return render_template(
         'startup.html', page='info', subpage=None, popup=True,
-        startup=startup, desc_field=desc_field, link_field=link_field)
+        startup=startup, **extra_fields)
 
 
 @app.route('/cache/')
