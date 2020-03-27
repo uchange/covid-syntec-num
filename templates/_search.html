@@ -4,17 +4,17 @@
         <input id="search" name="q" type="text" class="form-control"
                placeholder="Rechercher" value="{{ request.args.q }}">
         <div class="input-group-append">
-            <button class="btn btn-secondary" type="submit">
+            <button class="btn btn-outline-secondary" type="submit">
                 <i class="fa fa-search"></i>
             </button>
             {% if request.args.q %}
-                <a class="btn btn-secondary"
+                <a class="btn btn-outline-secondary"
                    href="{{ url_for("getmap", page=page, category=subpage, q=request.args.q) }}" type="button">
                     <i class="fa fa-map"></i>
                     Carte
                 </a>
             {% else %}
-                <a class="btn btn-secondary"
+                <a class="btn btn-outline-secondary"
                    href="{{ url_for("getmap", page=page, category=subpage) }}" type="button">
                     <i class="fa fa-map"></i>
                     Carte
