@@ -53,7 +53,7 @@
             {% endfor %}
         </div>
     </div>
-    <div class="card-footer border-warning {% if startup.extra_data[priority_field] %} alert-warning{% endif %}"">
+    <div class="card-footer border-warning {% if startup.extra_data[priority_field] %} alert-warning{% endif %}">
         <div class="text-center">
             <span class="small text-info font-weight-bold">
                 Localisation : {{ startup.company__startup__city|default("Inconnue", boolean=True) }}
