@@ -1,4 +1,4 @@
-flask==1.1.1
+flask==2.3.2
 flask-caching==1.8.0
 flask-sitemap==0.3.0
 gunicorn==20.0.4
